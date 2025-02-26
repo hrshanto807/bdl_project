@@ -75,7 +75,7 @@ class UserController extends Controller
         }
 
         // If the request is a regular web request, redirect to the profile page
-        return redirect()->route('userProfilePage')->with('success', 'User logged in successfully');
+        return redirect()->route('home')->with('success', 'User logged in successfully');
         
     } catch (Exception $e) {
         return back()->withErrors(['message' => $e->getMessage()]);
@@ -86,9 +86,7 @@ class UserController extends Controller
 public function UserProfile(Request $request)
 {
    return Auth::user();
-}
-
-  
+}  
 
   // send OTP
   public function SendOTP(Request $request)
@@ -127,7 +125,7 @@ public function UserProfile(Request $request)
       try {
           $request->validate([
               'email' => 'required|string|email|max:50',
-              'otp' => 'required|string|min:1'
+              'otp' => 'required|string|min:6'
           ]);
   
           $email = $request->input('email');

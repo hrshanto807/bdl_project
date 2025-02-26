@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CategoryController;
 
 // page routes
 Route::middleware('auth:sanctum')->get('/profile', [UserController::class, 'profile'])->name('userProfilePage');
@@ -16,8 +17,11 @@ Route::get('/login', function () {
     return view('componands.login_form');
 })->name('login');
 Route::get('/', function () {
-    return view('componands.login_form');
-})->name('login');
+    return view('page.home');
+})->name('home')->middleware('auth:sanctum');
+Route::get('/dashboard', function () {
+    return view('page.home');
+})->name('dashboard')->middleware('auth:sanctum');
 
 
 // User web routes
@@ -39,3 +43,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/deleteCustomer', [CustomerController::class, 'DeleteCustomer']);
     Route::post('/updateCustomer', [CustomerController::class, 'UpdateCustomer']);
 });
+
+
+// category routes
+
+Route::middleware('auth:sanctum')->group(function () {    
+    Route::get('/categoryList', [CategoryController::class, 'CategoryList'])->name('categoryList');
+    Route::post('/createCategory', [CategoryController::class, 'CreateCategory'])->name('createCategory');
+    Route::post('/deleteCategory', [CategoryController::class, 'DeleteCategory'])->name('deleteCategory');
+    Route::post('/updateCategory', [CategoryController::class,  'UpdateCategory'])->name('updateCategory');
+});
+
+
