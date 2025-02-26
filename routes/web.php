@@ -11,7 +11,7 @@ Route::middleware('auth:sanctum')->get('/profile', [UserController::class, 'prof
 Route::get("/register", [UserController::class,"UserRegister"])->name('register');
 Route::get('/sendotp', [UserController::class,'SendOtpPage'])->name('forgot');
 Route::get('/verifyotp', [UserController::class,'VerifyOtpPage'])->name('verifyotp');
-Route::get('/resetpass', [UserController::class,'ResetPasswordPage'])->middleware('auth:sanctum')->name('resetPass');
+Route::get('/resetpass', [UserController::class,'ResetPasswordPage'])->name('resetPass');
 Route::get('/login', function () {
     return view('componands.login_form');
 })->name('login');
@@ -28,6 +28,8 @@ Route::post('/sendOTP', [UserController::class,'SendOTP'])->name('sendOTP');
 Route::post('/verify-otp', [UserController::class, 'VerifyOTP'])->name('verifyOTP');
 Route::post('/resetUserPass', [UserController::class,'ResetPassword'])->middleware('auth:sanctum')->name("resetPassword");
 Route::get('/userLogout', [UserController::class,'UserLogout'])->middleware('auth:sanctum')->name('userLogout');
+Route::post('/updateProfile', [UserController::class, 'UpdateProfile'])->middleware('auth:sanctum')->name('updateProfile');
+
 
 // Customer web routes with authentication
 Route::middleware('auth:sanctum')->group(function () {

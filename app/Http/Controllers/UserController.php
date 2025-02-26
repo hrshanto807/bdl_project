@@ -127,52 +127,59 @@ public function UserProfile(Request $request)
   public function VerifyOTP(Request $request)
   {
       try {
-          // Validate the input data (email and OTP)
           $request->validate([
               'email' => 'required|string|email|max:50',
-              'otp' => 'required|string|max:50',
+              'otp' => 'required|string|min:1'
           ]);
   
           $email = $request->input('email');
           $otp = $request->input('otp');
   
-          // Check if the OTP and email match
-          $user = User::where('email', '=', $email)->where('otp', '=', $otp)->first();
+          $user = User::where('email', $email)->where('otp', $otp)->first();
   
           if (!$user) {
-              return redirect()->back()->with('status', 'fail')->with('message', 'Invalid OTP');
+              return back()->with('status', 'fail')->with('message', 'Invalid OTP');
           }
   
-          // Reset OTP after successful verification
-          User::where('email', '=', $email)->update(['otp' => '0']);
+          // Clear OTP
+          $user->update(['otp' => '0']);
   
-          // Create a token for the user
-          $token = $user->createToken('authToken')->plainTextToken;  
-         
-          // Return success response with token
-          return redirect()->route('resetPass')->with('status', 'success')->with('message', 'OTP Verification Successful');
+          // Log in the user
+          Auth::login($user);
+  
+          // Generate Sanctum token (if needed for API calls)
+          $token = $user->createToken('authToken')->plainTextToken;
+  
+          return redirect()->route('resetPass')->with('status', 'success')->with('message', 'OTP Verified Successfully');
       } catch (Exception $e) {
           return back()->with('status', 'fail')->with('message', $e->getMessage());
       }
   }
-
-public function ResetPassword(Request $request)
-{
-    try {
-        $request->validate([
-            'password' => 'required|string|min:6|max:50',
-        ]);
-        
-
-        $id = Auth::id();
-        $pass = $request->input('password');
-        User::where('id', '=', $id)->update(['password' => Hash::make($pass)]);
-
-        return redirect()->route('login')->with('status', 'success')->with('message', 'Password Reset Successfully');
-    } catch (Exception $e) {
-        return redirect()->route('login')->with('status', 'fail')->with('message', $e->getMessage());
-    }
-}
+  
+  
+  public function ResetPassword(Request $request)
+  {
+      try {
+          $request->validate([
+              'password' => 'required|string|min:3'
+          ]);
+  
+          $userId = Auth::id();
+  
+          if (!$userId) {
+              return redirect()->route('login')->with('status', 'fail')->with('message', 'Unauthorized access.');
+          }
+  
+          User::where('id', $userId)->update([
+              'password' => Hash::make($request->input('password'))
+          ]);
+  
+          return redirect()->route('login')->with('status', 'success')->with('message', 'Password Reset Successfully');
+      } catch (Exception $e) {
+          return back()->with('status', 'fail')->with('message', $e->getMessage());
+      }
+  }
+  
 
 public function UserLogout(Request $request){
   $request->user()->tokens()->delete();
@@ -184,6 +191,31 @@ public function UserLogout(Request $request){
   
   return redirect('/login');
 }
+
+public function UpdateProfile(Request $request)
+{
+    try {
+        $request->validate([
+            'firstName' => 'required|string|max:50',
+            'lastName' => 'required|string|max:50',
+            'mobile' => 'required|string|max:15',
+        ]);
+
+        User::where('id', Auth::id())->update([
+            'firstName' => $request->input('firstName'),
+            'lastName' => $request->input('lastName'),
+            'mobile' => $request->input('mobile'),
+        ]);
+
+        return redirect()->route('userProfilePage')->with('status', 'success')->with('message', 'Profile updated successfully!');
+    } catch (Exception $e) {
+        return redirect()->back()->with('status', 'fail')->with('message', $e->getMessage());
+    }
+}
+
+
+
+
 
 
 
@@ -209,10 +241,6 @@ public function UserLogout(Request $request){
     }
 public function SendOtpPage(){
   return view('componands.send_otp');
-}
-
-public function forgetPassword(){
-  return view('componands.forget_password');
 }
 public function VerifyOtpPage(){
   return view('componands.verify_otp');

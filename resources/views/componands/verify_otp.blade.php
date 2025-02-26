@@ -21,13 +21,19 @@
             </div>
         @endif
 
+        <!-- Show token for debugging (Remove in production) -->
+        @if(session('token'))
+            <div class="bg-gray-100 text-gray-800 p-3 rounded mb-4 text-sm">
+                <strong>Token:</strong> {{ session('token') }}
+            </div>
+        @endif
+
         <!-- OTP Verification Form -->
         <form action="{{ route('verifyOTP') }}" method="POST" class="space-y-4">
             @csrf
 
-            <!-- Visible email input field -->
+            <!-- Email input field -->
             <div>
-                <!-- <label for="email" class="block text-gray-700 font-medium mb-2">Email</label> -->
                 <input 
                     type="email" 
                     id="email" 
@@ -35,7 +41,7 @@
                     class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
                     placeholder="Enter your email" 
                     value="{{ Auth::check() ? Auth::user()->email : old('email') }}" 
-                    required style="display: none;"
+                    required 
                 />
             </div>
 
@@ -52,26 +58,14 @@
                 />
             </div>
 
+            <!-- Hidden token field (auto-filled if token exists) -->
+            <input type="hidden" name="token" value="{{ session('token') }}">
+
             <!-- Submit button -->
             <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
                 Verify OTP
             </button>
         </form>
     </div>
-
-    <script>
-        // Auto-fill the email from localStorage if available
-        const emailField = document.getElementById('email');
-        const storedEmail = localStorage.getItem('userEmail');
-        if (storedEmail) {
-            emailField.value = storedEmail; // Populate from localStorage
-        }
-
-        // Optionally: Save the email to localStorage when form is submitted
-        document.querySelector('form').addEventListener('submit', function () {
-            const email = emailField.value;
-            localStorage.setItem('userEmail', email); // Store email in localStorage
-        });
-    </script>
 </body>
 </html>
