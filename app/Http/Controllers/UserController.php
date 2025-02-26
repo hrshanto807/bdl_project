@@ -7,11 +7,9 @@ use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Testing\Fluent\Concerns\Has;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
 use App\Mail\OTPMail;
-use Illuminate\Http\Response;
+
 
 
 class UserController extends Controller
@@ -214,23 +212,7 @@ public function UpdateProfile(Request $request)
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// function for view
-
-// register view
+// Auth view
   public function UserRegister(){
     return view('componands.registration_form'); 
     
