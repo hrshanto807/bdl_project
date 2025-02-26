@@ -12,7 +12,7 @@
         
         <form action="{{ route('updateProfile') }}" method="POST">
     @csrf
-    @method('PUT') <!-- Simulate a PUT request for RESTful conventions -->
+    @method('PUT') <!-- Spoofs PUT request through POST -->
 
     <div class="space-y-4">
         <div>

@@ -148,7 +148,7 @@ public function UserProfile(Request $request)
           // Generate Sanctum token (if needed for API calls)
           $token = $user->createToken('authToken')->plainTextToken;
   
-          return redirect()->route('resetPass')->with('status', 'success')->with('message', 'OTP Verified Successfully');
+          return redirect()->route('resetPass')->with('status', 'success')->with('message', 'OTP Verified Successfully')->with('token', $token);
       } catch (Exception $e) {
           return back()->with('status', 'fail')->with('message', $e->getMessage());
       }

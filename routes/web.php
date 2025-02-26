@@ -28,7 +28,8 @@ Route::post('/sendOTP', [UserController::class,'SendOTP'])->name('sendOTP');
 Route::post('/verify-otp', [UserController::class, 'VerifyOTP'])->name('verifyOTP');
 Route::post('/resetUserPass', [UserController::class,'ResetPassword'])->middleware('auth:sanctum')->name("resetPassword");
 Route::get('/userLogout', [UserController::class,'UserLogout'])->middleware('auth:sanctum')->name('userLogout');
-Route::post('/updateProfile', [UserController::class, 'UpdateProfile'])->middleware('auth:sanctum')->name('updateProfile');
+Route::put('/updateProfile', [UserController::class, 'UpdateProfile'])->middleware('auth:sanctum')->name('updateProfile');
+
 
 
 // Customer web routes with authentication
