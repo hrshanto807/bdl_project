@@ -33,7 +33,7 @@
         <ul class="nav flex-column ">
             <li class="nav-item"><a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Customer</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Category</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ route('categoryList') }}">Category</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Product</a></li>
             <!-- <li class="nav-item"><a class="nav-link" href="#">Create Sale</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Invoice</a></li>
@@ -58,6 +58,9 @@
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- JS and AJAX to Fetch Categories -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>
 

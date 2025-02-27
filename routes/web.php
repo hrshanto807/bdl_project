@@ -5,11 +5,12 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Models\Category;
 
 // page routes
-Route::middleware('auth:sanctum')->get('/profile', [UserController::class, 'profile'])->name('userProfilePage');
 
-// Registration and OTP routes
+// Authentication
+Route::middleware('auth:sanctum')->get('/profile', [UserController::class, 'profile'])->name('userProfilePage');
 Route::get("/register", [UserController::class,"UserRegister"])->name('register');
 Route::get('/sendotp', [UserController::class,'SendOtpPage'])->name('forgot');
 Route::get('/verifyotp', [UserController::class,'VerifyOtpPage'])->name('verifyotp');
@@ -17,6 +18,9 @@ Route::get('/resetpass', [UserController::class,'ResetPasswordPage'])->name('res
 Route::get('/login', [UserController::class,'LoginPage'])->name('login');
 Route::get('/', [UserController::class, 'dashboard'])->name('home')->middleware('auth:sanctum');
 Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard')->middleware('auth:sanctum');
+
+// Category page routes
+Route::get('/category', [UserController::class,''])->name(  '')->middleware('');
 
 
 // User web routes
@@ -41,7 +45,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 // category routes
-
 Route::middleware('auth:sanctum')->group(function () {    
     Route::get('/categoryList', [CategoryController::class, 'CategoryList'])->name('categoryList');
     Route::post('/createCategory', [CategoryController::class, 'CreateCategory'])->name('createCategory');
@@ -55,7 +58,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/productList', [ProductController::class, 'ProductList'])->name('productList');
     Route::post('/createProduct', [ProductController::class, 'CreateProduct'])->name('createProduct');
     Route::post('/deleteProduct', [ProductController::class, 'ProductDelete'])->name('deleteProduct');
-    Route::post('/updateProduct', [ProductController::class, 'UpdateProduct'])->name('updateProduct');
+    Route::post('/updateProduct', [ProductController::class, 'ProductUpdate'])->name('updateProduct');
 });
+
+
+
+// for test route
+Route::get('/addcategory', [CategoryController::class, 'addCategory'])->name('AddCategory');
+Route::get('/listcategory', [CategoryController::class, 'ListCategory'])->name('ListCategory');
+Route::get('/deltecategory', [CategoryController::class, "deleteCategory"])->name('DeleteCategory');
+Route::get('/eiditcategory', [CategoryController::class,'editCategory'])->name('EditCategory');
+
+
+// Route::get('/CategoryPage', [CategoryController::class, 'CategoryPage'])->name('CategoryPage');
 
 
