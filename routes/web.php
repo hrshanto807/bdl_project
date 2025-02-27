@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductController;
 
 // page routes
 Route::middleware('auth:sanctum')->get('/profile', [UserController::class, 'profile'])->name('userProfilePage');
@@ -13,15 +14,9 @@ Route::get("/register", [UserController::class,"UserRegister"])->name('register'
 Route::get('/sendotp', [UserController::class,'SendOtpPage'])->name('forgot');
 Route::get('/verifyotp', [UserController::class,'VerifyOtpPage'])->name('verifyotp');
 Route::get('/resetpass', [UserController::class,'ResetPasswordPage'])->name('resetPass');
-Route::get('/login', function () {
-    return view('componands.login_form');
-})->name('login');
-Route::get('/', function () {
-    return view('page.home');
-})->name('home')->middleware('auth:sanctum');
-Route::get('/dashboard', function () {
-    return view('page.home');
-})->name('dashboard')->middleware('auth:sanctum');
+Route::get('/login', [UserController::class,'LoginPage'])->name('login');
+Route::get('/', [UserController::class, 'dashboard'])->name('home')->middleware('auth:sanctum');
+Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard')->middleware('auth:sanctum');
 
 
 // User web routes
@@ -52,6 +47,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/createCategory', [CategoryController::class, 'CreateCategory'])->name('createCategory');
     Route::post('/deleteCategory', [CategoryController::class, 'DeleteCategory'])->name('deleteCategory');
     Route::post('/updateCategory', [CategoryController::class,  'UpdateCategory'])->name('updateCategory');
+});
+
+
+// Product routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/productList', [ProductController::class, 'ProductList'])->name('productList');
+    Route::post('/createProduct', [ProductController::class, 'CreateProduct'])->name('createProduct');
+    Route::post('/deleteProduct', [ProductController::class, 'ProductDelete'])->name('deleteProduct');
+    Route::post('/updateProduct', [ProductController::class, 'UpdateProduct'])->name('updateProduct');
 });
 
 

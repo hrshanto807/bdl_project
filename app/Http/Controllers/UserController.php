@@ -230,4 +230,15 @@ public function ResetPasswordPage(){
   return view('componands.reset_pass');
 }
 
+public function LoginPage(){    
+        return view('componands.login_form');
+
+}
+
+// dashboard view
+public function dashboard(){
+    return view('page.home');   
+
+}
+
 }

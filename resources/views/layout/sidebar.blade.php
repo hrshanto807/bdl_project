@@ -35,16 +35,16 @@
             <li class="nav-item"><a class="nav-link" href="#">Customer</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Category</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Product</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Create Sale</a></li>
+            <!-- <li class="nav-item"><a class="nav-link" href="#">Create Sale</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Invoice</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Report</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Report</a></li> -->
         </ul>
     </div>
 </nav>
     </div>
     <div class="col-md-10">
         <div class="row">            
-            <main role="main" class="col-md-12 ml-sm-auto px-4">
+            <main role="main" class="col-md-12 ml-sm-auto">
                 @yield('content')
             </main>
         </div>
