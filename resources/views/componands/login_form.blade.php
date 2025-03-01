@@ -1,36 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Form</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
     <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-        <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>        
+        <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
 
         <!-- Display success message -->
         @if(session('success'))
-            <div class="bg-green-100 text-green-700 p-3 rounded mb-4">
-                {{ session('success') }}
-            </div>
+        <div class="bg-green-100 text-green-700 p-3 rounded mb-4">
+            {{ session('success') }}
+        </div>
         @endif
 
         <!-- Display error messages -->
         @if(session('status') == 'failed')
-            <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
-                {{ session('message') }}
-            </div>
+        <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
+            {{ session('message') }}
+        </div>
         @endif
 
         <!-- Display form validation errors -->
         @if($errors->any())
-            <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
-                @foreach($errors->all() as $error)
-                    <p>{{ $error }}</p>
-                @endforeach
-            </div>
+        <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
+            @foreach($errors->all() as $error)
+            <p>{{ $error }}</p>
+            @endforeach
+        </div>
         @endif
 
         <!-- Login form -->
@@ -57,4 +59,5 @@
         </form>
     </div>
 </body>
+
 </html>

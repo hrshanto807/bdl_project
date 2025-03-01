@@ -15,11 +15,11 @@
     </div>
 
     @if(session('status'))
-        <div class="alert alert-success">{{ session('status') }}</div>
+    <div class="alert alert-success">{{ session('status') }}</div>
     @endif
 
     @if(session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
+    <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
     <table class="w-full border-collapse border border-gray-200">
@@ -83,61 +83,61 @@
 
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
-async function openEditModal(product) {
-    document.getElementById("editProductId").value = product.id;
-    document.getElementById("editName").value = product.name;
-    document.getElementById("editPrice").value = product.price;
-    document.getElementById("editUnit").value = product.unit;
-    if (product.img_url) {
-        document.getElementById("editImagePreview").src = "{{ asset('') }}" + product.img_url;
-        document.getElementById("editImagePreview").classList.remove("hidden");
+    async function openEditModal(product) {
+        document.getElementById("editProductId").value = product.id;
+        document.getElementById("editName").value = product.name;
+        document.getElementById("editPrice").value = product.price;
+        document.getElementById("editUnit").value = product.unit;
+        if (product.img_url) {
+            document.getElementById("editImagePreview").src = "{{ asset('') }}" + product.img_url;
+            document.getElementById("editImagePreview").classList.remove("hidden");
+        }
+        let response = await axios.get("/get-categories");
+        let categoryDropdown = document.getElementById("editCategory");
+        categoryDropdown.innerHTML = '<option value="">Select Category</option>';
+        response.data.rows.forEach(category => {
+            let selected = category.id == product.category_id ? 'selected' : '';
+            categoryDropdown.innerHTML += `<option value="${category.id}" ${selected}>${category.name}</option>`;
+        });
+        document.getElementById("editModal").classList.remove("hidden");
     }
-    let response = await axios.get("/get-categories");
-    let categoryDropdown = document.getElementById("editCategory");
-    categoryDropdown.innerHTML = '<option value="">Select Category</option>';
-    response.data.rows.forEach(category => {
-        let selected = category.id == product.category_id ? 'selected' : '';
-        categoryDropdown.innerHTML += `<option value="${category.id}" ${selected}>${category.name}</option>`;
-    });
-    document.getElementById("editModal").classList.remove("hidden");
-}
 
-function closeEditModal() {
-    document.getElementById("editModal").classList.add("hidden");
-}
+    function closeEditModal() {
+        document.getElementById("editModal").classList.add("hidden");
+    }
 
-function previewImage(event) {
-    let reader = new FileReader();
-    reader.onload = function () {
-        let preview = document.getElementById("editImagePreview");
-        preview.src = reader.result;  // Set the preview to the selected file
-        preview.classList.remove("hidden"); // Ensure it's visible
-    };
-    reader.readAsDataURL(event.target.files[0]);  // Read the selected file
-}
+    function previewImage(event) {
+        let reader = new FileReader();
+        reader.onload = function() {
+            let preview = document.getElementById("editImagePreview");
+            preview.src = reader.result; // Set the preview to the selected file
+            preview.classList.remove("hidden"); // Ensure it's visible
+        };
+        reader.readAsDataURL(event.target.files[0]); // Read the selected file
+    }
 
-function confirmDelete(event, url, id, categoryId) {
-    event.preventDefault();
-    Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Yes, delete it!"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            let form = document.createElement('form');
-            form.method = 'POST';
-            form.action = url;
-            form.innerHTML = `<input type='hidden' name='_token' value='{{ csrf_token() }}'>
+    function confirmDelete(event, url, id, categoryId) {
+        event.preventDefault();
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let form = document.createElement('form');
+                form.method = 'POST';
+                form.action = url;
+                form.innerHTML = `<input type='hidden' name='_token' value='{{ csrf_token() }}'>
                               <input type='hidden' name='id' value='${id}'>
                               <input type='hidden' name='category_id' value='${categoryId}'>`;
-            document.body.appendChild(form);
-            form.submit();
-        }
-    });
-}
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
 </script>
 @endsection

@@ -10,53 +10,53 @@
         </div>
 
         @if(session('status'))
-    <div class="alert alert-success">
-        {{ session('status') }}
-    </div>
-@endif
+        <div class="alert alert-success">
+            {{ session('status') }}
+        </div>
+        @endif
 
-@if(session('error'))
-    <div class="alert alert-danger">
-        {{ session('error') }}
-    </div>
-@endif
+        @if(session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+        @endif
 
 
         <!-- Category List Table -->
-        @if($categories->isEmpty())  <!-- Check if there are categories -->
-            <p>No categories available</p>
+        @if($categories->isEmpty()) <!-- Check if there are categories -->
+        <p>No categories available</p>
         @else
-            <div class="table-responsive mt-4">
-                <table class="table table-striped">
-                    <thead class="bg-light">
-                        <tr>
-                            <th>No</th>
-                            <th>Category</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($categories as $index => $category)
-                            <tr>
-                                <td>{{ $index + 1 + ($categories->currentPage() - 1) * $categories->perPage() }}</td> <!-- Adjusted index for pagination -->
-                                <td>{{ $category->name }}</td>
-                                <td>                                   
-                                <button onclick="openEditModal('{{ $category->id }}', '{{ $category->name }}')" class="btn btn-outline-success btn-sm rounded-pill px-3">EDIT</button>
+        <div class="table-responsive mt-4">
+            <table class="table table-striped">
+                <thead class="bg-light">
+                    <tr>
+                        <th>No</th>
+                        <th>Category</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($categories as $index => $category)
+                    <tr>
+                        <td>{{ $index + 1 + ($categories->currentPage() - 1) * $categories->perPage() }}</td> <!-- Adjusted index for pagination -->
+                        <td>{{ $category->name }}</td>
+                        <td>
+                            <button onclick="openEditModal('{{ $category->id }}', '{{ $category->name }}')" class="btn btn-outline-success btn-sm rounded-pill px-3">EDIT</button>
 
-                                    <!-- Delete Button -->
-                                    <button onclick="confirmDelete(event,'{{ route('deleteCategory') }}', '{{ $category->id }}')" 
-                                        class="btn btn-outline-danger btn-sm rounded-pill px-3">DELETE</button>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                            <!-- Delete Button -->
+                            <button onclick="confirmDelete(event,'{{ route('deleteCategory') }}', '{{ $category->id }}')"
+                                class="btn btn-outline-danger btn-sm rounded-pill px-3">DELETE</button>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
 
-            <!-- Pagination Links -->
-            <div class="d-flex justify-content-center mt-4">
-                {{ $categories->links() }} <!-- Pagination links -->
-            </div>
+        <!-- Pagination Links -->
+        <div class="d-flex justify-content-center mt-4">
+            {{ $categories->links() }} <!-- Pagination links -->
+        </div>
         @endif
     </div>
 </div>
@@ -98,9 +98,10 @@
         let modal = new bootstrap.Modal(document.getElementById('editCategoryModal'));
         modal.show();
     }
+
     function confirmDelete(event, url, id) {
         event.preventDefault(); // Prevent default form submission
-        
+
         Swal.fire({
             title: "Are you sure?",
             text: "You won't be able to revert this!",

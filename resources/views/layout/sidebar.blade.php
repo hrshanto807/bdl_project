@@ -35,7 +35,7 @@
             <nav class=" d-none d-md-block bg-light sidebar">
                 <div class="sidebar-sticky ml-3">
                     <ul class="nav flex-column ">
-                        <li class="nav-item"><a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a></li>                        
+                        <li class="nav-item"><a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('categoryList') }}">Category</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('productList') }}">Product</a></li>
                         <!-- <li class="nav-item"><a class="nav-link" href="#">Customer</a></li> -->
