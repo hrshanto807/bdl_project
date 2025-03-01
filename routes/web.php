@@ -45,10 +45,10 @@ Route::post('/verify-otp', [UserController::class, 'VerifyOTP'])->name('verifyOT
 
 // Customer web routes with authentication
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/createCustomer', [CustomerController::class, 'CreateCustomer']);
-    Route::get('/customerList', [CustomerController::class, 'CustomerList']);
-    Route::post('/deleteCustomer', [CustomerController::class, 'DeleteCustomer']);
-    Route::post('/updateCustomer', [CustomerController::class, 'UpdateCustomer']);
+    Route::post('/createCustomer', [CustomerController::class, 'CreateCustomer'])->name('CreateCustomer');
+    Route::get('/customerList', [CustomerController::class, 'CustomerList'])->name('customerList');
+    Route::post('/deleteCustomer', [CustomerController::class, 'DeleteCustomer'])->name('deleteCustomer');
+    Route::post('/updateCustomer', [CustomerController::class, 'UpdateCustomer'])->name('editCustomer');
 });
 
 
@@ -70,11 +70,6 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
-
-
-
-
-
 // Route::get('/CategoryPage', [CategoryController::class, 'CategoryPage'])->name('CategoryPage');
 
 route::get('/test', function () {
@@ -85,4 +80,6 @@ Route::get('/create-product', [ProductController::class, 'createProductForm'])->
 
 
 Route::get('/get-categories', [CategoryController::class, 'getCategories']);
+
+Route::get('/add-customer', [CustomerController::class, 'AddCustomer'])->name('AddCustomer')->middleware('auth:sanctum');
 

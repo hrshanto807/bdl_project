@@ -8,6 +8,25 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+    /* Hover Effect */
+    .hover-effect {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        text-decoration: none; /* Remove text decoration (underline) */
+    }
+
+    .hover-effect:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .hover-effect .card {
+        cursor: pointer;
+    }
+    a{
+        text-decoration: none !important;
+    }
+</style>
 </head>
 
 <body>
@@ -38,7 +57,7 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('categoryList') }}">Category</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('productList') }}">Product</a></li>
-                        <!-- <li class="nav-item"><a class="nav-link" href="#">Customer</a></li> -->
+                        <li class="nav-item"><a class="nav-link" href="{{ route('customerList') }}">Customer</a></li>
                         <!-- <li class="nav-item"><a class="nav-link" href="#">Create Sale</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Invoice</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Report</a></li> -->
