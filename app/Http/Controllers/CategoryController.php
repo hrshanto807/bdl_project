@@ -98,5 +98,14 @@ public function ListCategory(){
 }
 
 
+public function getCategories()
+{
+    $categories = Category::all();
+    return response()->json(['rows' => $categories]);
+}
+
+
+
+
 }
 
