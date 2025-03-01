@@ -3,6 +3,13 @@
 @section('content')
 <div class="container">
     <div class="card p-4 shadow-sm rounded">
+       
+        <!-- Search Form -->
+        <form method="GET" action="{{ route('categoryList') }}" class="d-flex justify-content-between align-items-center mb-3">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name..." class="form-control w-50">
+            <button type="submit" class="btn btn-primary rounded-pill px-4">Search</button>
+        </form>
+
         <!-- Category List Section -->
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="fw-bold">Category</h4>
@@ -20,7 +27,6 @@
             {{ session('error') }}
         </div>
         @endif
-
 
         <!-- Category List Table -->
         @if($categories->isEmpty()) <!-- Check if there are categories -->
@@ -60,6 +66,7 @@
         @endif
     </div>
 </div>
+
 <!-- Edit Category Modal -->
 <div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -87,6 +94,7 @@
         </div>
     </div>
 </div>
+
 <script>
     function openEditModal(id, name) {
         document.getElementById('editCategoryId').value = id;

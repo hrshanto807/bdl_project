@@ -175,17 +175,6 @@ class ProductController extends Controller
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
     // view product
     public function ProductPage()
     {
