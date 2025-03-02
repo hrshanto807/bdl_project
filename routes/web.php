@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ReportController;
+use App\Models\Invoice;
 use App\Models\Product;
 
 // page routes
@@ -104,4 +105,13 @@ Route::get('/products', [ProductController::class, 'product_list'])->name('produ
 route::get('/a', function () {
     return view('invoice.dfrd');
 })->name('');
+
+Route::get('/invoice', function () {
+    return view('invoice.invoice-list');
+})->name('invoice');
+
+Route::get('/invoice-list', [InvoiceController::class, 'invoiceList'])->name('invoiceList');
+Route::post('/invoice-delete', [InvoiceController::class, 'invoiceDelete'])->name('invoiceDelete');
+Route::get('/invoice-details', [InvoiceController::class, 'InvoiceDetails'])->name('invoiceDetails');
+
 

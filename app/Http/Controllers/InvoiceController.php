@@ -70,15 +70,17 @@ class InvoiceController extends Controller
 
     }
 
-    public function invoiceSelect(Request $request){
-        try {
-            $user_id=Auth::id();
-            $rows= Invoice::where('user_id',$user_id)->with('customer')->get();
-            return response()->json(['status' => 'success', 'rows' => $rows]);
-        }catch (Exception $e){
-            return response()->json(['status' => 'fail', 'message' => $e->getMessage()]);
-        }
+    public function invoiceSelect(Request $request)
+{
+    try {
+        $user_id = Auth::id();
+        $rows = Invoice::where('user_id', $user_id)->with('customer')->get();
+        return response()->json(['status' => 'success', 'rows' => $rows]);
+    } catch (Exception $e) {
+        return response()->json(['status' => 'fail', 'message' => $e->getMessage()]);
     }
+}
+
 
 
     public function InvoiceDetails(Request $request){
@@ -103,31 +105,53 @@ class InvoiceController extends Controller
 
 
 
-    public function invoiceDelete(Request $request){
-        DB::beginTransaction();
-        try {
-            $user_id=Auth::id();
+    public function invoiceDelete(Request $request)
+{
+    DB::beginTransaction();
+    try {
+        $user_id = Auth::id();
+        $invoice_id = $request->input('id');
 
-            InvoiceProduct::where('invoice_id',$request->input('inv_id'))
-                ->where('user_id',$user_id)
-                ->delete();
+        InvoiceProduct::where('invoice_id', $invoice_id)->where('user_id', $user_id)->delete();
+        Invoice::where('id', $invoice_id)->delete();
 
-            Invoice::where('id',$request->input('inv_id'))->delete();
-
-            DB::commit();
-            return response()->json(['status' => 'success', 'message' => "Request Successful"]);
-        }
-        catch (Exception $e){
-            DB::rollBack();
-            return response()->json(['status' => 'fail', 'message' => $e->getMessage()]);
-        }
+        DB::commit();
+        return back()->with('status', 'Invoice deleted successfully');
+    } catch (Exception $e) {
+        DB::rollBack();
+        return back()->with('error', $e->getMessage());
     }
+}
+
 
     public function customer_list()
     {
         $customers = Customer::all(); // Assuming you have a Customer model and table
         return response()->json($customers);
     }
+
+    public function invoiceList(Request $request)
+{
+    try {
+        $user_id = Auth::id();
+        $search = $request->input('search');
+        
+        $query = Invoice::where('user_id', $user_id)->with('customer');
+        
+        if ($search) {
+            $query->whereHas('customer', function($q) use ($search) {
+                $q->where('name', 'like', "%$search%");
+            });
+        }
+
+        $invoices = $query->paginate(10); // Add pagination
+        
+        return view('invoice.invoice-list', compact('invoices'));
+    } catch (Exception $e) {
+        return back()->with('error', $e->getMessage());
+    }
+}
+
 
  
 
