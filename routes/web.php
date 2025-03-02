@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\InvoiceController;
 
 // page routes
 
@@ -26,7 +27,15 @@ Route::get('/eiditcategory', [CategoryController::class, 'editCategory'])->name(
 
 // Product page routes
 Route::get('/product-add', [UserController::class, 'productAdd'])->name('productAdd')->middleware('auth:sanctum');
+// Customer page routes
+Route::get('/add-customer', [CustomerController::class, 'AddCustomer'])->name('AddCustomer')->middleware('auth:sanctum');
 
+
+
+// =============================================================================================================================================================
+
+
+//  web routes
 
 // User web routes
 Route::post('/userRegister', [UserController::class, 'Useregister'])->name('UserRegister');
@@ -58,6 +67,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/createCategory', [CategoryController::class, 'CreateCategory'])->name('createCategory');
     Route::post('/deleteCategory', [CategoryController::class, 'DeleteCategory'])->name('deleteCategory');
     Route::post('/updateCategory', [CategoryController::class,  'UpdateCategory'])->name('updateCategory');
+    Route::get('/get-categories', [CategoryController::class, 'getCategories']);
 });
 
 
@@ -69,17 +79,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/updateProduct', [ProductController::class, 'ProductUpdate'])->name('updateProduct');
 });
 
+// Invoice routes
+Route::post("/invoice-create",[InvoiceController::class,'invoiceCreate'])->middleware('auth:sanctum');
+Route::get("/invoice-select",[InvoiceController::class,'invoiceSelect'])->middleware('auth:sanctum');
+Route::post("/invoice-details",[InvoiceController::class,'InvoiceDetails'])->middleware('auth:sanctum');
+Route::post("/invoice-delete",[InvoiceController::class,'invoiceDelete'])->middleware('auth:sanctum');
 
-// Route::get('/CategoryPage', [CategoryController::class, 'CategoryPage'])->name('CategoryPage');
+
 
 route::get('/test', function () {
-    return view('product.product-add');
-})->name('productAdd');
-
-Route::get('/create-product', [ProductController::class, 'createProductForm'])->name('createProductForm');
-
-
-Route::get('/get-categories', [CategoryController::class, 'getCategories']);
-
-Route::get('/add-customer', [CustomerController::class, 'AddCustomer'])->name('AddCustomer')->middleware('auth:sanctum');
-
+    return view('invoice.create-sale');
+})->name('');
