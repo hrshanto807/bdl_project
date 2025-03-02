@@ -185,4 +185,10 @@ class ProductController extends Controller
     {
         return view('product.product-add');
     }
+
+    public function product_list()
+{
+    $products = Product::all();  // Fetch all products from the database
+    return response()->json($products);
+}
 }

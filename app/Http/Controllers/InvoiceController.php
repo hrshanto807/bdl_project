@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Invoice;
 use App\Models\InvoiceProduct;
 use Illuminate\Http\Request;
+use app\Models\Product;
 
 
 class InvoiceController extends Controller
@@ -122,6 +123,12 @@ class InvoiceController extends Controller
         }
     }
 
+    public function customer_list()
+    {
+        $customers = Customer::all(); // Assuming you have a Customer model and table
+        return response()->json($customers);
+    }
 
+ 
 
 }

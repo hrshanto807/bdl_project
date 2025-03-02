@@ -97,6 +97,17 @@ public function ListCategory(){
     return view('categories.category-list');
 }
 
+public function getCategories()
+{
+    // Fetch categories from the database
+    $categories = Category::all();
+
+    // Return categories as JSON response
+    return response()->json([
+        'rows' => $categories
+    ]);
+}
+
 
 }
 

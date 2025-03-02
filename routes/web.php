@@ -6,6 +6,8 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\ReportController;
+use App\Models\Product;
 
 // page routes
 
@@ -26,7 +28,8 @@ Route::get('/deltecategory', [CategoryController::class, "deleteCategory"])->nam
 Route::get('/eiditcategory', [CategoryController::class, 'editCategory'])->name('EditCategory');
 
 // Product page routes
-Route::get('/product-add', [UserController::class, 'productAdd'])->name('productAdd')->middleware('auth:sanctum');
+Route::get('/product-add', [ProductController::class, 'productAdd'])->middleware('auth:sanctum')->name('productAdd');
+
 // Customer page routes
 Route::get('/add-customer', [CustomerController::class, 'AddCustomer'])->name('AddCustomer')->middleware('auth:sanctum');
 
@@ -85,8 +88,20 @@ Route::get("/invoice-select",[InvoiceController::class,'invoiceSelect'])->middle
 Route::post("/invoice-details",[InvoiceController::class,'InvoiceDetails'])->middleware('auth:sanctum');
 Route::post("/invoice-delete",[InvoiceController::class,'invoiceDelete'])->middleware('auth:sanctum');
 
+// Report
+Route::get("/sales-report/{FormDate}/{ToDate}",[ReportController::class,'SalesReport'])->middleware('auth:sanctum');
+
 
 
 route::get('/test', function () {
     return view('invoice.create-sale');
 })->name('');
+
+Route::get('/invoice', [InvoiceController::class, 'showInvoice']);
+
+Route::get('/customers', [InvoiceController::class, 'customer_list'])->name('customerlist')->middleware('auth:sanctum');
+Route::get('/products', [ProductController::class, 'product_list'])->name('productlist')->middleware('auth:sanctum');
+route::get('/a', function () {
+    return view('invoice.dfrd');
+})->name('');
+
