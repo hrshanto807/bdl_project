@@ -15,7 +15,12 @@
             <a href="{{ url('/test') }}" class="btn btn-primary rounded-pill px-4">CREATE</a>
         </div>
 
-       
+        @if (session('status'))
+        <div class="alert alert-success">
+            {{ session('status') }}
+        </div>
+        @endif
+
 
         <!-- Invoice List Table -->
         @if($invoices->isEmpty())

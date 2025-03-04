@@ -9,24 +9,30 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-    /* Hover Effect */
-    .hover-effect {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        text-decoration: none; /* Remove text decoration (underline) */
-    }
+        /* Hover Effect */
+        .hover-effect {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            /* Remove text decoration (underline) */
+        }
 
-    .hover-effect:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
+        .hover-effect:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
 
-    .hover-effect .card {
-        cursor: pointer;
-    }
-    a{
-        text-decoration: none !important;
-    }
-</style>
+        .hover-effect .card {
+            cursor: pointer;
+        }
+
+        a {
+            text-decoration: none !important;
+        }
+
+        html {
+            overflow-x: hidden;
+        }
+    </style>
 </head>
 
 <body>
@@ -59,8 +65,8 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('productList') }}">Product</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('customerList') }}">Customer</a></li>
                         <!-- <li class="nav-item"><a class="nav-link" href="#">Create Sale</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Invoice</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Report</a></li> -->
+                        <li class="nav-item"><a class="nav-link" href="#">Invoice</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Report</a></li> -->
                     </ul>
                 </div>
             </nav>
@@ -81,9 +87,11 @@
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- JS and AJAX to Fetch Categories -->
+    <!-- Axios -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('js/script.js') }}"></script>
 
 </body>
 

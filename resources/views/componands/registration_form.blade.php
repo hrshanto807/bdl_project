@@ -37,6 +37,10 @@
                 Complete
             </button>
         </form>
+        <!-- back to login page -->
+        <div class="text-center mt-4">
+            <a href="{{ route('login') }}" class="text-blue-600 hover:underline">Back to Login</a>
+        </div>
     </div>
 </body>
 

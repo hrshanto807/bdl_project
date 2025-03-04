@@ -17,11 +17,10 @@ public function dashboard()
     $productCount = Product::count();
     $categoryCount = Category::count();
     $customerCount = Customer::count();
-    $invoiceCount = Invoice::count();
-    // $totalSale = Sale::sum('amount');  
-    // $vatCollection = Vat::sum('amount'); 
-    // $totalCollection = $totalSale + $vatCollection;
-
+    $invoiceCount = Invoice::count();   
+    $totalSales = Invoice::sum('total');   
+    $totalCollection = Invoice::sum('payable');
+    $vatCollection = Invoice::sum('vat');
     return view('dashboard', compact(
         'productCount', 
         'categoryCount', 

@@ -8,67 +8,92 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Invoice;
 use App\Models\InvoiceProduct;
 use Illuminate\Http\Request;
-use app\Models\Product;
+use App\Models\Product;
+
 
 
 class InvoiceController extends Controller
 {
-
-    public function invoiceCreate(Request $request){
+    public function invoiceCreate(Request $request)
+    {
         DB::beginTransaction();
 
         try {
-
+            // Validate input
             $request->validate([
-                'total' => 'required|string|max:50',
-                'discount' => 'required|string|max:50',
-                'vat' => 'required|string|max:50',
-                'payable' => 'required|string|max:50',
-                'customer_id' => 'required|string|max:50',
-            ]);
-            $user_id=Auth::id();
-            $total=$request->input('total');
-            $discount=$request->input('discount');
-            $vat=$request->input('vat');
-            $payable=$request->input('payable');
-            $customer_id=$request->input('customer_id');
-
-
-            $invoice= Invoice::create([
-                'total'=>$total,
-                'discount'=>$discount,
-                'vat'=>$vat,
-                'payable'=>$payable,
-                'user_id'=>$user_id,
-                'customer_id'=>$customer_id,
+                'total' => 'required|numeric',
+                'discount' => 'required|numeric',
+                'vat' => 'required|numeric',
+                'payable' => 'required|numeric',
+                'customer_id' => 'required|exists:customers,id',
+                'products' => 'required|array|min:1', // Ensure at least one product
+                'products.*.product_id' => 'required|exists:products,id',
+                'products.*.qty' => 'required|integer|min:1',
+                'products.*.sale_price' => 'required|numeric|min:0',
             ]);
 
+            // Retrieve request data
+            $user_id = Auth::id();
+            $total = $request->input('total');
+            $discount = $request->input('discount');
+            $vat = $request->input('vat');
+            $payable = $request->input('payable');
+            $customer_id = $request->input('customer_id');
 
+            // Create invoice
+            $invoice = Invoice::create([
+                'total' => $total,
+                'discount' => $discount,
+                'vat' => $vat,
+                'payable' => $payable,
+                'user_id' => $user_id,
+                'customer_id' => $customer_id,
+            ]);
 
+            if (!$invoice) {
+                throw new Exception('Invoice creation failed!');
+            }
 
-            $invoiceID=$invoice->id;
+            $invoiceID = $invoice->id;
+            $products = $request->input('products');
 
-            $products= $request->input('products');
             foreach ($products as $EachProduct) {
-                    InvoiceProduct::create([
-                        'invoice_id' => $invoiceID,
-                        'user_id'=>$user_id,
-                        'product_id' => $EachProduct['product_id'],
-                        'qty' =>  $EachProduct['qty'],
-                        'sale_price'=>  $EachProduct['sale_price'],
-                    ]);
-             }
+                // Fetch the product model
+                $productModel = Product::find($EachProduct['product_id']);
 
+                if (!$productModel) {
+                    throw new Exception('Product not found: ' . $EachProduct['product_id']);
+                }
+
+                // Check stock availability
+                if ($productModel->unit < $EachProduct['qty']) {
+                    throw new Exception('Not enough stock for product: ' . $productModel->name);
+                }
+
+                // Create invoice product entry
+                InvoiceProduct::create([
+                    'invoice_id' => $invoiceID,
+                    'user_id' => $user_id,
+                    'product_id' => $EachProduct['product_id'],
+                    'qty' => $EachProduct['qty'],
+                    'sale_price' => $EachProduct['sale_price'],
+                ]);
+
+                // Reduce product stock
+                $productModel->decrement('unit', $EachProduct['qty']);
+            }
 
             DB::commit();
-            return response()->json(['status' => 'success', 'message' => "Request Successful"]);
-        }
-        catch (Exception $e) {
-            DB::rollBack();
-            return response()->json(['status' => 'fail', 'message' => $e->getMessage()]);
-        }
 
+            return response()->json(['status' => 'success', 'message' => "Invoice created successfully!", 'invoice_id' => $invoiceID], 201);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json(['status' => 'fail', 'message' => $e->getMessage()], 400);
+        }
     }
+
+    
+
 
     public function invoiceSelect(Request $request)
 {
@@ -77,7 +102,7 @@ class InvoiceController extends Controller
         $rows = Invoice::where('user_id', $user_id)->with('customer')->get();
         return response()->json(['status' => 'success', 'rows' => $rows]);
     } catch (Exception $e) {
-        return response()->json(['status' => 'fail', 'message' => $e->getMessage()]);
+        return response()->json(['status' => 'fail', 'message' => $e->getMessage()]);  
     }
 }
 
@@ -88,9 +113,7 @@ class InvoiceController extends Controller
             $user_id=Auth::id();
             $customerDetails=Customer::where('user_id',$user_id)->where('id',$request->input('cus_id'))->first();
             $invoiceTotal=Invoice::where('user_id','=',$user_id)->where('id',$request->input('inv_id'))->first();
-            $invoiceProduct=InvoiceProduct::where('invoice_id',$request->input('inv_id'))
-                ->where('user_id',$user_id)->with('product')
-                ->get();
+            $invoiceProduct=InvoiceProduct::where('invoice_id',$request->input('inv_id'))->where('user_id',$user_id)->with('product')->get();
             $rows= array(
                 'customer'=>$customerDetails,
                 'invoice'=>$invoiceTotal,
@@ -102,7 +125,6 @@ class InvoiceController extends Controller
             return response()->json(['status' => 'fail', 'message' => $e->getMessage()]);
         }
     }
-
 
 
     public function invoiceDelete(Request $request)

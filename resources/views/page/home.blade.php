@@ -17,7 +17,7 @@
         </a>
     </div>
     <div class="col-md-3">
-        <a href="#" class="card p-3 text-center hover-effect">
+        <a href="{{ route('customerList') }}" class="card p-3 text-center hover-effect">
             <i class="fas fa-users fa-2x mb-2 text-success"></i>
             <div>{{ \App\Models\Customer::count() }} Customers</div> <!-- Dynamic customer count -->
         </a>
@@ -33,19 +33,19 @@
     <div class="col-md-4">
         <div class="card p-3 text-center hover-effect">
             <i class="fas fa-dollar-sign fa-2x mb-2 text-info"></i>
-            <div>0 Total Sale</div> <!-- Dynamic total sale -->
+            <div>{{ \App\Models\Invoice::sum('total') }} Total Sale</div> <!-- Dynamic total sale -->
         </div>
     </div>
     <div class="col-md-4">
         <div class="card p-3 text-center hover-effect">
             <i class="fas fa-receipt fa-2x mb-2 text-warning"></i>
-            <div>0 VAT Collection</div> <!-- Dynamic VAT collection -->
+            <div>{{ \App\Models\Invoice::sum('vat') }} VAT Collection</div> <!-- Dynamic VAT collection -->
         </div>
     </div>
     <div class="col-md-4">
         <div class="card p-3 text-center hover-effect">
             <i class="fas fa-wallet fa-2x mb-2 text-dark"></i>
-            <div>0 Total Collection</div> <!-- Dynamic total collection -->
+            <div>{{ \App\Models\Invoice::sum('payable') }} Total Collection</div> <!-- Dynamic total collection -->
         </div>
     </div>
 </div>

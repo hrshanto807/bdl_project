@@ -1,6 +1,14 @@
 @extends('layout.sidebar')
 
 @section('content')
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- DataTables -->
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+
 <div class="container-fluid">
     <div class="row">
         <!-- Invoice Section -->
@@ -8,15 +16,10 @@
             <div class="card p-4 shadow-sm">
                 <div class="row">
                     <div class="col-8">
-                        <span class="text-bold text-dark">BILLED TO </span>
-                        <p class="text-xs mx-0 my-1">Name: <span id="CName"></span></p>
-                        <p class="text-xs mx-0 my-1">Email: <span id="CEmail"></span></p>
-                        <p class="text-xs mx-0 my-1">User ID: <span id="CId"></span></p>
-                    </div>
-                    <div class="col-4">
-                        <span class="text-bold text-dark">INVOICE </span>
-                        <p class="text-bold mx-0 my-1 text-dark">Invoice </p>
-                        <p class="text-xs mx-0 my-1">Date: {{ date('Y-m-d') }}</p>
+                        <span class="text-bold text-dark">BILLED TO</span>
+                        <p>Name: <span id="CName">Select a Customer</span></p>
+                        <p>Email: <span id="CEmail">-</span></p>
+                        <p>User ID: <span id="CId" data-id="">-</span></p>
                     </div>
                 </div>
                 <table class="table">
@@ -30,158 +33,140 @@
                     </thead>
                     <tbody id="invoiceItems"></tbody>
                 </table>
-                <p><strong>TOTAL: </strong> $<span id="totalPrice">0</span></p>
-                <p><strong>VAT(5%): </strong> $<span id="vat">0</span></p>
-                <p><strong>Discount: </strong> $<span id="discount">0</span></p>
+                <p><strong>TOTAL:</strong> $<span id="totalPrice">0.00</span></p>
+                <p><strong>VAT(5%):</strong> $<span id="vat">0.00</span></p>
+                <p><strong>Discount:</strong> $<span id="discount">0.00</span></p>
                 <div class="mb-3">
-                    <label for="discount" class="form-label">Discount (%):</label>
+                    <label for="discountInput" class="form-label">Discount (%):</label>
                     <input type="number" id="discountInput" class="form-control" value="0">
                 </div>
-                <button class="btn btn-primary w-100">CONFIRM</button>
+                <button class="btn btn-primary w-100" id="confirmInvoice">CONFIRM</button>
             </div>
         </div>
-        
+
         <!-- Product Selection -->
         <div class="col-md-3">
             <div class="card p-3 shadow-sm">
                 <h5>Product</h5>
-                <input type="text" class="form-control mb-2" placeholder="Search...">
+                <input type="text" class="form-control mb-2" placeholder="Search..." id="searchProduct">
                 <table class="table">
-                    <tbody>
-                        <tr>
-                            <td>Product 1 ($100)</td>
-                            <td><button class="btn btn-sm btn-primary addProduct" data-name="Product 1" data-price="100">ADD</button></td>
-                        </tr>
-                        <tr>
-                            <td>Product 2 ($200)</td>
-                            <td><button class="btn btn-sm btn-primary addProduct" data-name="Product 2" data-price="200">ADD</button></td>
-                        </tr>
-                    </tbody>
+                    <tbody id="productList"></tbody>
                 </table>
             </div>
         </div>
-        
+
         <!-- Customer Selection -->
         <div class="col-md-3">
             <div class="card p-3 shadow-sm">
                 <h5>Customer</h5>
-                <input type="text" class="form-control mb-2" placeholder="Search...">
+                <input type="text" class="form-control mb-2" placeholder="Search..." id="searchCustomer">
                 <table class="table">
-                    <tbody>
-                        <tr>
-                            <td>John Doe</td>
-                            <td>
-                                <button class="btn btn-sm btn-primary addCustomer" 
-                                    data-name="John Doe" 
-                                    data-email="john@example.com" 
-                                    data-id="123">ADD</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Jane Smith</td>
-                            <td>
-                                <button class="btn btn-sm btn-primary addCustomer" 
-                                    data-name="Jane Smith" 
-                                    data-email="jane@example.com" 
-                                    data-id="456">ADD</button>
-                            </td>
-                        </tr>
-                    </tbody>
+                    <tbody id="customerList"></tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
 
-<!-- JavaScript -->
+<!-- Axios -->
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    let invoiceItems = document.getElementById('invoiceItems');
-    let totalPrice = document.getElementById('totalPrice');
-    let vat = document.getElementById('vat');
-    let discountInput = document.getElementById('discountInput');
+    document.addEventListener("DOMContentLoaded", function () {
+        fetchCustomers();
+        fetchProducts();
 
-    // Function to update the total amount
-    function updateTotal() {
-        let total = 0;
-        document.querySelectorAll('.product-total').forEach(item => {
-            total += parseFloat(item.textContent);
-        });
-
-        let discount = (parseFloat(discountInput.value) || 0) / 100;
-        let discountedTotal = total - (total * discount);
-        let vatAmount = discountedTotal * 0.05;
-
-        totalPrice.textContent = discountedTotal.toFixed(2);
-        vat.textContent = vatAmount.toFixed(2);
-    }
-
-    // Add product to the invoice
-    document.querySelectorAll('.addProduct').forEach(button => {
-        button.addEventListener('click', function() {
-            let productName = this.dataset.name;
-            let productPrice = parseFloat(this.dataset.price);
-
-            let existingRow = document.querySelector(`#invoiceItems tr[data-name="${productName}"]`);
-            
-            if (existingRow) {
-                let qtyInput = existingRow.querySelector('.product-qty');
-                let totalCell = existingRow.querySelector('.product-total');
-                qtyInput.value = parseInt(qtyInput.value) + 1;
-                totalCell.textContent = (qtyInput.value * productPrice).toFixed(2);
-            } else {
-                let row = document.createElement('tr');
-                row.setAttribute('data-name', productName);
-                row.innerHTML = `
-                    <td>${productName}</td>
-                    <td><input type="number" class="form-control product-qty" value="1" min="1" style="width: 50px;"></td>
-                    <td class="product-total">${productPrice.toFixed(2)}</td>
-                    <td><button class="btn btn-sm btn-danger removeProduct">X</button></td>
+        function fetchCustomers() {
+    axios.get("{{ url('/customers') }}")
+        .then(response => {
+            let customers = response.data;
+            let customerList = document.getElementById("customerList");
+            customerList.innerHTML = "";
+            customers.forEach(customer => {
+                let row = `
+                    <tr>
+                        <td>${customer.name}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary selectCustomer"
+                                data-id="${customer.id}"
+                                data-name="${customer.name}"
+                                data-email="${customer.email}">
+                                Select
+                            </button>
+                        </td>
+                    </tr>
                 `;
-                invoiceItems.appendChild(row);
+                customerList.innerHTML += row;
+            });
+        })
+        .catch(error => console.error("Error fetching customers:", error));
+}
+
+
+        function fetchProducts() {
+            axios.get("{{ url('/products') }}")
+                .then(response => {
+                    let products = response.data;
+                    let productList = document.getElementById("productList");
+                    productList.innerHTML = "";
+                    products.forEach(product => {
+                        let row = `
+                            <tr>                                
+                                <td>
+                                    ${product.name} ($${product.price})
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-success addProduct"
+                                        data-id="${product.id}"
+                                        data-name="${product.name}"
+                                        data-price="${product.price}">
+                                        Add
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                        productList.innerHTML += row;
+                    });
+                })
+                .catch(error => console.error("Error fetching products:", error));
+        }
+
+        document.addEventListener("click", function (event) {
+            if (event.target.classList.contains("selectCustomer")) {
+                let customerId = event.target.dataset.id;
+                let customerName = event.target.dataset.name;
+                let customerEmail = event.target.dataset.email;
+                document.getElementById("CName").textContent = customerName;
+                document.getElementById("CEmail").textContent = customerEmail;
+                document.getElementById("CId").textContent = customerId;
+                document.getElementById("CId").setAttribute("data-id", customerId);
             }
+        });
 
-            updateTotal();
+        document.addEventListener("click", function (event) {
+            if (event.target.classList.contains("addProduct")) {
+                let productId = event.target.dataset.id;
+                let productName = event.target.dataset.name;
+                let price = parseFloat(event.target.dataset.price);
+                let row = document.createElement("tr");
+                row.innerHTML = `
+                    <td class="item-name" data-product-id="${productId}">${productName}</td>
+                    <td class="item-qty">1</td>
+                    <td class="item-total">${price.toFixed(2)}</td>
+                    <td><button class="btn btn-danger btn-sm removeProduct">X</button></td>
+                `;
+                document.getElementById("invoiceItems").appendChild(row);
+                updateTotals();
+            }
+        });
+
+        document.addEventListener("click", function (event) {
+            if (event.target.classList.contains("removeProduct")) {
+                event.target.closest("tr").remove();
+                updateTotals();
+            }
         });
     });
-
-    // Remove product from the invoice
-    invoiceItems.addEventListener('click', function(event) {
-        if (event.target.classList.contains('removeProduct')) {
-            event.target.closest('tr').remove();
-            updateTotal();
-        }
-    });
-
-    // Update product total when quantity is changed
-    invoiceItems.addEventListener('input', function(event) {
-        if (event.target.classList.contains('product-qty')) {
-            let row = event.target.closest('tr');
-            let productPrice = parseFloat(document.querySelector(`.addProduct[data-name="${row.dataset.name}"]`).dataset.price);
-            let totalCell = row.querySelector('.product-total');
-            totalCell.textContent = (event.target.value * productPrice).toFixed(2);
-            updateTotal();
-        }
-    });
-
-    // Update the total when discount changes
-    discountInput.addEventListener('input', updateTotal);
-
-    // Add customer details to the BILLED TO section
-    document.querySelectorAll('.addCustomer').forEach(button => {
-        button.addEventListener('click', function() {
-            let customerName = this.dataset.name;
-            let customerEmail = this.dataset.email;
-            let customerId = this.dataset.id;
-
-            // Update the BILLED TO section with the selected customer details
-            document.getElementById('CName').textContent = customerName;
-            document.getElementById('CEmail').textContent = customerEmail;
-            document.getElementById('CId').textContent = customerId;
-        });
-    });
-});
 </script>
 
 @endsection

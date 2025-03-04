@@ -41,7 +41,7 @@ class ProductController extends Controller
 
             $img->move(public_path('uploads'), $img_name);
 
-            $product = Product::create([
+            Product::create([
                 'name' => $request->input('name'),
                 'user_id' => $user_id,
                 'category_id' => $category_id,
@@ -135,8 +135,9 @@ class ProductController extends Controller
                 // Upload the new image
                 $img = $request->file('img_url');
                 $file_name = time() . '-' . $img->getClientOriginalName();
-                $img->move(public_path('uploads'), $file_name);
-                $img_url = "uploads/{$file_name}";
+                $img_name = "{$user_id}-" . time() . "-{$file_name}";
+                $img->move(public_path('uploads'), $img_name);
+                $img_url = "uploads/{$img_name}";
 
                 // Update the image URL in the database
                 $updateData['img_url'] = $img_url;

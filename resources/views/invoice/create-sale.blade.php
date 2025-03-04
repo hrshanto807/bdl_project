@@ -1,53 +1,18 @@
 @extends('layout.sidebar')
 
-
 @section('content')
-<style>
-.pagination-btn {
-    margin: 0 5px;
-}
 
-.page-numbers {
-    margin: 0 10px;
-    font-weight: bold;
-    font-size: 1rem;
-    color: #333;
-}
-
-.pagination-custom {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 20px;
-}
-
-.pagination-btn:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
-.pagination-btn i {
-    font-size: 14px;
-}
-</style>
 <div class="container-fluid">
     <div class="row">
         <!-- Invoice Section -->
         <div class="col-md-5">
             <div class="card p-4 shadow-sm">
                 <div class="row">
-                    <!-- Customer Details Section (Billed To) -->
                     <div class="col-8">
-                        <span class="text-bold text-dark">BILLED TO </span>
-                        <p class="text-xs mx-0 my-1">Name: <span id="CName">Loading...</span></p>
-                        <p class="text-xs mx-0 my-1">Email: <span id="CEmail">Loading...</span></p>
-                        <p class="text-xs mx-0 my-1">User ID: <span id="CId">Loading...</span></p>
-                    </div>
-                    <!-- Invoice Info Section -->
-                    <div class="col-4">
-                        <span class="text-bold text-dark">INVOICE </span>
-                        <p class="text-bold mx-0 my-1 text-dark">Invoice </p>
-                        <p class="text-xs mx-0 my-1">Date: {{ date('Y-m-d') }}</p>
+                        <span class="text-bold text-dark">BILLED TO</span>
+                        <p>Name: <span id="CName">Select a Customer</span></p>
+                        <p>Email: <span id="CEmail">-</span></p>
+                        <p>User ID: <span id="CId" data-id="">-</span></p>
                     </div>
                 </div>
                 <table class="table">
@@ -61,236 +26,231 @@
                     </thead>
                     <tbody id="invoiceItems"></tbody>
                 </table>
-                <p><strong>TOTAL: </strong> $<span id="totalPrice">0.00</span></p>
-                <p><strong>VAT(5%): </strong> $<span id="vat">0.00</span></p>
-                <p><strong>Discount: </strong> $<span id="discount">0.00</span></p>
+                <p><strong>TOTAL:</strong> $<span id="totalPrice">0.00</span></p>
+                <p><strong>VAT(5%):</strong> $<span id="vat">0.00</span></p>
+                <p><strong>Discount:</strong> $<span id="discount">0.00</span></p>
                 <div class="mb-3">
                     <label for="discountInput" class="form-label">Discount (%):</label>
                     <input type="number" id="discountInput" class="form-control" value="0">
                 </div>
-                <button class="btn btn-primary w-100">CONFIRM</button>
+                <button class="btn btn-primary w-100" id="confirmInvoice">CONFIRM</button>
             </div>
         </div>
-        
+
         <!-- Product Selection -->
         <div class="col-md-3">
             <div class="card p-3 shadow-sm">
                 <h5>Product</h5>
                 <input type="text" class="form-control mb-2" placeholder="Search..." id="searchProduct">
                 <table class="table">
-                    <tbody id="productList">
-                        <!-- Products will be loaded here dynamically -->
-                    </tbody>
+                    <tbody id="productList"></tbody>
                 </table>
-                <div id="productPagination" class="pagination-custom d-flex justify-content-center my-3"></div>
             </div>
         </div>
-        
-        <!-- Customer Selection (Separate from invoice items) -->
+
+        <!-- Customer Selection -->
         <div class="col-md-3">
             <div class="card p-3 shadow-sm">
                 <h5>Customer</h5>
                 <input type="text" class="form-control mb-2" placeholder="Search..." id="searchCustomer">
                 <table class="table">
-                    <tbody id="customerList">
-                        <!-- Customers will be loaded here dynamically -->
-                    </tbody>
+                    <tbody id="customerList"></tbody>
                 </table>
-                <div id="customerPagination" class="pagination-custom d-flex justify-content-center my-3"></div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script src="https://kit.fontawesome.com/a076d05399.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const itemsPerPage = 5;
+    document.addEventListener("DOMContentLoaded", function () {
+        fetchCustomers();
+        fetchProducts();
 
-    // Function to fetch products and customers
-    async function fetchData(url, listId, searchInputId, paginationId) {
-        try {
-            const response = await axios.get(url);
-            const items = response.data;
-            paginate(listId, items, searchInputId, paginationId);
-        } catch (error) {
-            console.error(`Error fetching ${url}:`, error);
-        }
-    }
-
-    // Fetch products & customers
-    fetchData('/products', 'productList', 'searchProduct', 'productPagination');
-    fetchData('/customers', 'customerList', 'searchCustomer', 'customerPagination');
-
-    // Function to add product to invoice
-    function addProductToInvoice(name, price, id) {
-        let invoiceItems = document.getElementById('invoiceItems');
-
-        // Check if product already exists
-        let existingRow = document.querySelector(`#invoiceItems tr[data-id="${id}"]`);
-
-        if (existingRow) {
-            let qtyInput = existingRow.querySelector('.product-qty');
-            qtyInput.value = parseInt(qtyInput.value) + 1;
-            updateRowTotal(existingRow, price);
-        } else {
-            let row = document.createElement('tr');
-            row.dataset.id = id;
-            row.innerHTML = `
-                <td>${name}</td>
-                <td><input type="number" class="form-control product-qty" value="1" min="1"></td>
-                <td class="product-total">${price.toFixed(2)}</td>
-                <td><button class="btn btn-danger btn-sm removeProduct">X</button></td>
-            `;
-            invoiceItems.appendChild(row);
-
-            // Add event listener to update total when quantity changes
-            row.querySelector('.product-qty').addEventListener('input', function() {
-                updateRowTotal(row, price);
-            });
+        function fetchCustomers() {
+            axios.get("{{ url('/customers') }}")
+                .then(response => {
+                    let customers = response.data;
+                    let customerList = document.getElementById("customerList");
+                    customerList.innerHTML = "";
+                    customers.forEach(customer => {
+                        let row = `
+                            <tr>
+                                <td>${customer.name}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary selectCustomer"
+                                        data-id="${customer.id}"
+                                        data-name="${customer.name}"
+                                        data-email="${customer.email}">
+                                        Select
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                        customerList.innerHTML += row;
+                    });
+                })
+                .catch(error => console.error("Error fetching customers:", error));
         }
 
-        updateTotal();
-    }
+        function fetchProducts() {
+            axios.get("{{ url('/products') }}")
+                .then(response => {
+                    let products = response.data;
+                    let productList = document.getElementById("productList");
+                    productList.innerHTML = "";
+                    products.forEach(product => {
+                        let row = `
+                            <tr>
+                                <td>
+                                    <img src="${product.img_url}" alt="${product.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                                </td>
+                                <td>
+                                    ${product.name} ($${product.price})
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-success addProduct"
+                                        data-id="${product.id}"
+                                        data-name="${product.name}"
+                                        data-price="${product.price}">
+                                        Add
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                        productList.innerHTML += row;
+                    });
+                })
+                .catch(error => console.error("Error fetching products:", error));
+        }
 
-    // Function to update the total for a single row
-    function updateRowTotal(row, price) {
-        let qtyInput = row.querySelector('.product-qty');
-        let totalCell = row.querySelector('.product-total');
-        let qty = parseInt(qtyInput.value) || 1;
-        totalCell.textContent = (price * qty).toFixed(2);
-        updateTotal();
-    }
+        // Select Customer
+        document.addEventListener("click", function (event) {
+            if (event.target.classList.contains("selectCustomer")) {
+                let customerId = event.target.dataset.id;
+                let customerName = event.target.dataset.name;
+                let customerEmail = event.target.dataset.email;
 
-    // Function to update the overall total
-    function updateTotal() {
-        let total = 0;
-        document.querySelectorAll('#invoiceItems tr').forEach(row => {
-            total += parseFloat(row.querySelector('.product-total').textContent);
+                document.getElementById("CName").textContent = customerName;
+                document.getElementById("CEmail").textContent = customerEmail;
+                document.getElementById("CId").textContent = customerId;
+                document.getElementById("CId").setAttribute("data-id", customerId);
+            }
         });
 
-        let discount = (parseFloat(document.getElementById('discountInput').value) || 0) / 100;
-        let discountedTotal = total - (total * discount);
-        let vatAmount = discountedTotal * 0.05;
+        // Add Product to Invoice
+        document.addEventListener("click", function (event) {
+            if (event.target.classList.contains("addProduct")) {
+                let productId = event.target.dataset.id;
+                let productName = event.target.dataset.name;
+                let price = parseFloat(event.target.dataset.price);
 
-        document.getElementById('totalPrice').textContent = discountedTotal.toFixed(2);
-        document.getElementById('vat').textContent = vatAmount.toFixed(2);
-    }
-
-    // Event delegation for adding products to invoice
-    document.addEventListener('click', function(event) {
-        if (event.target.classList.contains('addProduct')) {
-            const name = event.target.dataset.name;
-            const price = parseFloat(event.target.dataset.price);
-            const id = event.target.dataset.id;
-
-            addProductToInvoice(name, price, id);
-        }
-    });
-
-    // Remove item from invoice
-    document.addEventListener('click', function(event) {
-        if (event.target.classList.contains('removeProduct')) {
-            event.target.closest('tr').remove();
-            updateTotal();
-        }
-    });
-
-    // Update total when discount changes
-    document.getElementById('discountInput').addEventListener('input', updateTotal);
-
-    // Function to handle customer selection
-    async function fetchCustomerDetails(customerId) {
-        try {
-            const response = await axios.get(`/customers/${customerId}`);
-            const customer = response.data;
-
-            document.getElementById('CName').textContent = customer.name || 'N/A';
-            document.getElementById('CEmail').textContent = customer.email || 'N/A';
-            document.getElementById('CId').textContent = customer.id || 'N/A';
-        } catch (error) {
-            console.error('Error fetching customer details:', error);
-        }
-    }
-
-    // Handle selecting a customer
-    document.addEventListener('click', function(event) {
-        if (event.target.classList.contains('addCustomer')) {
-            const customerId = event.target.dataset.id;
-            fetchCustomerDetails(customerId);
-        }
-    });
-
-    // Pagination and search for products and customers
-    function paginate(listId, items, searchInputId, paginationContainerId) {
-        const list = document.getElementById(listId);
-        const paginationContainer = document.getElementById(paginationContainerId);
-        let currentPage = 1;
-        const totalItems = items.length;
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-        function renderList() {
-            const start = (currentPage - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-            const paginatedItems = items.slice(start, end);
-
-            // Render list items
-            list.innerHTML = '';
-            paginatedItems.forEach(item => {
-                const row = document.createElement('tr');
+                let row = document.createElement("tr");
                 row.innerHTML = `
-                    <td>${item.name}</td>
-                    <td><button class="btn btn-sm btn-primary addProduct" data-name="${item.name}" data-price="${item.price}" data-id="${item.id}">ADD</button></td>
+                    <td class="item-name" data-product-id="${productId}">${productName}</td>
+                    <td class="item-qty">
+                        <button class="btn btn-sm btn-outline-secondary qty-decrease">-</button>
+                        <span class="qty-value">1</span>
+                        <button class="btn btn-sm btn-outline-secondary qty-increase">+</button>
+                    </td>
+                    <td class="item-total">${price.toFixed(2)}</td>
+                    <td><button class="btn btn-danger btn-sm removeProduct">X</button></td>
                 `;
-                list.appendChild(row);
-            });
+                document.getElementById("invoiceItems").appendChild(row);
+                updateTotals();
+            }
+        });
 
-            // Render pagination buttons
-            paginationContainer.innerHTML = '';
+        // Change Product Quantity
+        document.addEventListener("click", function (event) {
+            if (event.target.classList.contains("qty-increase") || event.target.classList.contains("qty-decrease")) {
+                let qtySpan = event.target.closest("td").querySelector(".qty-value");
+                let currentQty = parseInt(qtySpan.textContent);
 
-            // Previous Button
-            const prevButton = document.createElement('button');
-            prevButton.classList.add('btn', 'btn-outline-primary', 'btn-sm', 'pagination-btn');
-            prevButton.disabled = currentPage === 1;
-            prevButton.innerHTML = `<i class="fa fa-chevron-left"></i> Previous`;
-            prevButton.addEventListener('click', () => {
-                if (currentPage > 1) currentPage--;
-                renderList();
-            });
+                if (event.target.classList.contains("qty-increase")) {
+                    qtySpan.textContent = currentQty + 1;
+                } else if (event.target.classList.contains("qty-decrease") && currentQty > 1) {
+                    qtySpan.textContent = currentQty - 1;
+                }
 
-            // Page Numbers
-            const pageNumbers = document.createElement('span');
-            pageNumbers.classList.add('page-numbers');
-            pageNumbers.innerHTML = `${currentPage} / ${totalPages}`;
+                updateItemTotal(event.target.closest("tr"));
+                updateTotals();
+            }
+        });
 
-            // Next Button
-            const nextButton = document.createElement('button');
-            nextButton.classList.add('btn', 'btn-outline-primary', 'btn-sm', 'pagination-btn');
-            nextButton.disabled = currentPage === totalPages;
-            nextButton.innerHTML = `Next <i class="fa fa-chevron-right"></i>`;
-            nextButton.addEventListener('click', () => {
-                if (currentPage < totalPages) currentPage++;
-                renderList();
-            });
-
-            paginationContainer.appendChild(prevButton);
-            paginationContainer.appendChild(pageNumbers);
-            paginationContainer.appendChild(nextButton);
+        // Update Individual Item Total
+        function updateItemTotal(row) {
+            let basePrice = parseFloat(row.querySelector(".item-name").getAttribute("data-price"));
+            let qty = parseInt(row.querySelector(".qty-value").textContent);
+            let total = basePrice * qty;
+            row.querySelector(".item-total").textContent = total.toFixed(2);
         }
 
-        renderList();
-
-        // Re-render the list when the search input changes
-        document.getElementById(searchInputId).addEventListener('input', function () {
-            const filteredItems = items.filter(item =>
-                item.name.toLowerCase().includes(this.value.toLowerCase())
-            );
-            paginate(listId, filteredItems, searchInputId, paginationContainerId);
+        // Remove Product
+        document.addEventListener("click", function (event) {
+            if (event.target.classList.contains("removeProduct")) {
+                event.target.closest("tr").remove();
+                updateTotals();
+            }
         });
-    }
-});
+
+        // Update Totals
+        function updateTotals() {
+            let total = 0;
+            document.querySelectorAll("#invoiceItems tr").forEach(row => {
+                total += parseFloat(row.querySelector(".item-total").textContent);
+            });
+
+            let vat = total * 0.05; // VAT is 5%
+            let discount = parseFloat(document.getElementById("discountInput").value) || 0;
+            let payable = total + vat - discount;
+
+            document.getElementById("totalPrice").textContent = total.toFixed(2);
+            document.getElementById("vat").textContent = vat.toFixed(2);
+            document.getElementById("discount").textContent = discount.toFixed(2);
+            document.getElementById("payable").textContent = payable.toFixed(2);
+        }
+
+        document.getElementById("discountInput").addEventListener("input", updateTotals);
+
+        // Confirm Invoice
+        document.getElementById("confirmInvoice").addEventListener("click", function () {
+            let customerId = document.getElementById("CId").getAttribute("data-id");
+            let discount = parseFloat(document.getElementById("discountInput").value) || 0;
+            let totalPrice = parseFloat(document.getElementById("totalPrice").textContent);
+            let vat = parseFloat(document.getElementById("vat").textContent);
+            let payable = totalPrice + vat - discount;
+
+            if (!customerId) {
+                alert("Please select a customer.");
+                return;
+            }
+
+            let invoiceItems = [];
+            document.querySelectorAll("#invoiceItems tr").forEach(row => {
+                invoiceItems.push({
+                    product_id: row.querySelector(".item-name").dataset.productId,
+                    qty: parseInt(row.querySelector(".qty-value").textContent),
+                    sale_price: parseFloat(row.querySelector(".item-total").textContent)
+                });
+            });
+
+            axios.post("{{ route('invoiceCreate') }}", {
+                customer_id: customerId,
+                total: totalPrice,
+                discount: discount,
+                vat: vat,
+                payable: payable,
+                products: invoiceItems
+            })
+            .then(response => {
+                alert("Invoice Created Successfully!");
+                window.location.href = "{{ route('invoiceList') }}";
+            })
+            .catch(error => {
+                alert("Error creating invoice. Please try again.");
+            });
+        });
+    });
 </script>
 
 

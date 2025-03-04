@@ -84,7 +84,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // Invoice routes
-Route::post("/invoice-create",[InvoiceController::class,'invoiceCreate'])->middleware('auth:sanctum');
+Route::post("/invoice-create",[InvoiceController::class,'invoiceCreate'])->middleware('auth:sanctum')->name('invoiceCreate');
 Route::get("/invoice-select",[InvoiceController::class,'invoiceSelect'])->middleware('auth:sanctum');
 Route::post("/invoice-details",[InvoiceController::class,'InvoiceDetails'])->middleware('auth:sanctum');
 Route::post("/invoice-delete",[InvoiceController::class,'invoiceDelete'])->middleware('auth:sanctum');

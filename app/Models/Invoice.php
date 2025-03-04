@@ -9,13 +9,23 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Invoice extends Model
 {
+    use HasFactory;
+
     protected $fillable = ['total', 'discount', 'vat', 'payable', 'user_id', 'customer_id'];
 
-     public function customer():BelongsTo{
+    /**
+     * Relationship with Customer Model
+     */
+    public function customer(): BelongsTo
+    {
         return $this->belongsTo(Customer::class);
     }
 
-    public function invoiceProduct():HasMany{
+    /**
+     * Relationship with InvoiceProduct Model
+     */
+    public function invoiceProducts(): HasMany
+    {
         return $this->hasMany(InvoiceProduct::class);
     }
 }
