@@ -7,8 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ReportController;
-use App\Models\Invoice;
-use App\Models\Product;
+
 
 // page routes
 
@@ -86,32 +85,27 @@ Route::middleware('auth:sanctum')->group(function () {
 // Invoice routes
 Route::post("/invoice-create",[InvoiceController::class,'invoiceCreate'])->middleware('auth:sanctum')->name('invoiceCreate');
 Route::get("/invoice-select",[InvoiceController::class,'invoiceSelect'])->middleware('auth:sanctum');
-Route::post("/invoice-details",[InvoiceController::class,'InvoiceDetails'])->middleware('auth:sanctum');
-Route::post("/invoice-delete",[InvoiceController::class,'invoiceDelete'])->middleware('auth:sanctum');
+Route::post("/invoice-details",[InvoiceController::class,'InvoiceDetails'])->middleware('auth:sanctum')->name('invoiceDetails');
+// In routes/web.php
+Route::post('/invoice-delete', [InvoiceController::class, 'invoiceDelete'])->name('deleteInvoice')->middleware('auth:sanctum');
+Route::get('/invoice-list', [InvoiceController::class, 'invoiceList'])->name('invoiceList')->middleware('auth:sanctum');
+Route::get('/customers', [InvoiceController::class, 'customer_list'])->name('customerlist')->middleware('auth:sanctum');
+Route::get('/products', [ProductController::class, 'product_list'])->name('productlist')->middleware('auth:sanctum');
+route::get('/edit-invoice', [InvoiceController::class, 'editInvoice'])->name('editInvoice')->middleware('auth:sanctum');
 
+// Route::get('/invoice', [InvoiceController::class, 'showInvoice'])->name('')->middleware('');
 // Report
 Route::get("/sales-report/{FormDate}/{ToDate}",[ReportController::class,'SalesReport'])->middleware('auth:sanctum');
 
 
 
-route::get('/test', function () {
-    return view('invoice.create-sale');
-})->name('');
 
-Route::get('/invoice', [InvoiceController::class, 'showInvoice']);
 
-Route::get('/customers', [InvoiceController::class, 'customer_list'])->name('customerlist')->middleware('auth:sanctum');
-Route::get('/products', [ProductController::class, 'product_list'])->name('productlist')->middleware('auth:sanctum');
-route::get('/a', function () {
-    return view('invoice.dfrd');
-})->name('');
 
-Route::get('/invoice', function () {
-    return view('invoice.invoice-list');
-})->name('invoice');
 
-Route::get('/invoice-list', [InvoiceController::class, 'invoiceList'])->name('invoiceList');
-Route::post('/invoice-delete', [InvoiceController::class, 'invoiceDelete'])->name('invoiceDelete');
-Route::get('/invoice-details', [InvoiceController::class, 'InvoiceDetails'])->name('invoiceDetails');
+
+
+
+
 
 

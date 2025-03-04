@@ -62,10 +62,11 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
         fetchCustomers();
         fetchProducts();
 
+        // Fetch customers
         function fetchCustomers() {
             axios.get("{{ url('/customers') }}")
                 .then(response => {
@@ -92,6 +93,7 @@
                 .catch(error => console.error("Error fetching customers:", error));
         }
 
+        // Fetch products
         function fetchProducts() {
             axios.get("{{ url('/products') }}")
                 .then(response => {
@@ -124,7 +126,7 @@
         }
 
         // Select Customer
-        document.addEventListener("click", function (event) {
+        document.addEventListener("click", function(event) {
             if (event.target.classList.contains("selectCustomer")) {
                 let customerId = event.target.dataset.id;
                 let customerName = event.target.dataset.name;
@@ -138,7 +140,7 @@
         });
 
         // Add Product to Invoice
-        document.addEventListener("click", function (event) {
+        document.addEventListener("click", function(event) {
             if (event.target.classList.contains("addProduct")) {
                 let productId = event.target.dataset.id;
                 let productName = event.target.dataset.name;
@@ -146,7 +148,7 @@
 
                 let row = document.createElement("tr");
                 row.innerHTML = `
-                    <td class="item-name" data-product-id="${productId}">${productName}</td>
+                    <td class="item-name" data-product-id="${productId}" data-price="${price}">${productName}</td>
                     <td class="item-qty">
                         <button class="btn btn-sm btn-outline-secondary qty-decrease">-</button>
                         <span class="qty-value">1</span>
@@ -160,8 +162,8 @@
             }
         });
 
-        // Change Product Quantity
-        document.addEventListener("click", function (event) {
+        // Listen for quantity change
+        document.addEventListener("click", function(event) {
             if (event.target.classList.contains("qty-increase") || event.target.classList.contains("qty-decrease")) {
                 let qtySpan = event.target.closest("td").querySelector(".qty-value");
                 let currentQty = parseInt(qtySpan.textContent);
@@ -182,11 +184,11 @@
             let basePrice = parseFloat(row.querySelector(".item-name").getAttribute("data-price"));
             let qty = parseInt(row.querySelector(".qty-value").textContent);
             let total = basePrice * qty;
-            row.querySelector(".item-total").textContent = total.toFixed(2);
+            row.querySelector(".item-total").textContent = isNaN(total) ? "0.00" : total.toFixed(2);
         }
 
-        // Remove Product
-        document.addEventListener("click", function (event) {
+        // Remove Product from Invoice
+        document.addEventListener("click", function(event) {
             if (event.target.classList.contains("removeProduct")) {
                 event.target.closest("tr").remove();
                 updateTotals();
@@ -197,7 +199,8 @@
         function updateTotals() {
             let total = 0;
             document.querySelectorAll("#invoiceItems tr").forEach(row => {
-                total += parseFloat(row.querySelector(".item-total").textContent);
+                let itemTotal = parseFloat(row.querySelector(".item-total").textContent);
+                total += isNaN(itemTotal) ? 0 : itemTotal;
             });
 
             let vat = total * 0.05; // VAT is 5%
@@ -207,13 +210,13 @@
             document.getElementById("totalPrice").textContent = total.toFixed(2);
             document.getElementById("vat").textContent = vat.toFixed(2);
             document.getElementById("discount").textContent = discount.toFixed(2);
-            document.getElementById("payable").textContent = payable.toFixed(2);
         }
 
+        // Update totals when discount is applied
         document.getElementById("discountInput").addEventListener("input", updateTotals);
 
         // Confirm Invoice
-        document.getElementById("confirmInvoice").addEventListener("click", function () {
+        document.getElementById("confirmInvoice").addEventListener("click", function() {
             let customerId = document.getElementById("CId").getAttribute("data-id");
             let discount = parseFloat(document.getElementById("discountInput").value) || 0;
             let totalPrice = parseFloat(document.getElementById("totalPrice").textContent);
@@ -229,29 +232,30 @@
             document.querySelectorAll("#invoiceItems tr").forEach(row => {
                 invoiceItems.push({
                     product_id: row.querySelector(".item-name").dataset.productId,
-                    qty: parseInt(row.querySelector(".qty-value").textContent),
-                    sale_price: parseFloat(row.querySelector(".item-total").textContent)
+                    qty: parseInt(row.querySelector(".qty-value").textContent), // Updated qty
+                    sale_price: parseFloat(row.querySelector(".item-total").textContent) // Updated total
                 });
+
+
             });
 
             axios.post("{{ route('invoiceCreate') }}", {
-                customer_id: customerId,
-                total: totalPrice,
-                discount: discount,
-                vat: vat,
-                payable: payable,
-                products: invoiceItems
-            })
-            .then(response => {
-                alert("Invoice Created Successfully!");
-                window.location.href = "{{ route('invoiceList') }}";
-            })
-            .catch(error => {
-                alert("Error creating invoice. Please try again.");
-            });
+                    customer_id: customerId,
+                    total: totalPrice,
+                    discount: discount,
+                    vat: vat,
+                    payable: payable,
+                    products: invoiceItems
+                })
+                .then(response => {
+                    alert("Invoice Created Successfully!");
+                    window.location.href = "{{ route('invoiceList') }}";
+                })
+                .catch(error => {
+                    alert("Error creating invoice. Please try again.");
+                });
         });
     });
 </script>
-
 
 @endsection

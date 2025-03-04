@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -64,9 +65,9 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('categoryList') }}">Category</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('productList') }}">Product</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('customerList') }}">Customer</a></li>
-                        <!-- <li class="nav-item"><a class="nav-link" href="#">Create Sale</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Invoice</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Report</a></li> -->
+                       <li class="nav-item"><a class="nav-link" href="{{ url('/edit-invoice') }}">Create Sale</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('invoiceList') }}">Invoice</a></li>
+                        <!-- <li class="nav-item"><a class="nav-link" href="#">Report</a></li> -->
                     </ul>
                 </div>
             </nav>

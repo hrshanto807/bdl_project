@@ -126,24 +126,24 @@ class InvoiceController extends Controller
         }
     }
 
-
     public function invoiceDelete(Request $request)
-{
-    DB::beginTransaction();
-    try {
-        $user_id = Auth::id();
-        $invoice_id = $request->input('id');
-
-        InvoiceProduct::where('invoice_id', $invoice_id)->where('user_id', $user_id)->delete();
-        Invoice::where('id', $invoice_id)->delete();
-
-        DB::commit();
-        return back()->with('status', 'Invoice deleted successfully');
-    } catch (Exception $e) {
-        DB::rollBack();
-        return back()->with('error', $e->getMessage());
+    {
+        DB::beginTransaction();
+        try {
+            $user_id = Auth::id();
+            $invoice_id = $request->input('id');  // This should match the input name from the JavaScript
+    
+            InvoiceProduct::where('invoice_id', $invoice_id)->where('user_id', $user_id)->delete();
+            Invoice::where('id', $invoice_id)->delete();
+    
+            DB::commit();
+            return back()->with('status', 'Invoice deleted successfully');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return back()->with('error', $e->getMessage());
+        }
     }
-}
+    
 
 
     public function customer_list()
@@ -173,6 +173,17 @@ class InvoiceController extends Controller
         return back()->with('error', $e->getMessage());
     }
 }
+
+public function showInvoice($cus_id, $inv_id)
+{
+    return view('invoice.invoice-details', compact('cus_id', 'inv_id'));
+}
+
+public function editInvoice()                  
+{
+    return view('invoice.create-sale');
+}
+
 
 
  
