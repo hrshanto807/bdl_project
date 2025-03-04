@@ -27,7 +27,12 @@
                     <tbody id="invoiceItems"></tbody>
                 </table>
                 <p><strong>TOTAL:</strong> $<span id="totalPrice">0.00</span></p>
-                <p><strong>VAT(5%):</strong> $<span id="vat">0.00</span></p>
+                <p><strong>VAT (5%):</strong> $<span id="vat">0.00</span></p>
+                <div class="mb-3">
+                    <label for="vatInput" class="form-label">VAT (%):</label>
+                    <input type="number" id="vatInput" class="form-control" value="5">
+                </div>
+
                 <p><strong>Discount:</strong> $<span id="discount">0.00</span></p>
                 <div class="mb-3">
                     <label for="discountInput" class="form-label">Discount (%):</label>
@@ -203,7 +208,8 @@
                 total += isNaN(itemTotal) ? 0 : itemTotal;
             });
 
-            let vat = total * 0.05; // VAT is 5%
+            let vatPercentage = parseFloat(document.getElementById("vatInput").value) || 5;
+            let vat = total * (vatPercentage / 100);
             let discount = parseFloat(document.getElementById("discountInput").value) || 0;
             let payable = total + vat - discount;
 
@@ -214,6 +220,9 @@
 
         // Update totals when discount is applied
         document.getElementById("discountInput").addEventListener("input", updateTotals);
+
+        // Update totals when VAT is applied
+        document.getElementById("vatInput").addEventListener("input", updateTotals);
 
         // Confirm Invoice
         document.getElementById("confirmInvoice").addEventListener("click", function() {
@@ -235,8 +244,6 @@
                     qty: parseInt(row.querySelector(".qty-value").textContent), // Updated qty
                     sale_price: parseFloat(row.querySelector(".item-total").textContent) // Updated total
                 });
-
-
             });
 
             axios.post("{{ route('invoiceCreate') }}", {
