@@ -91,7 +91,7 @@ Route::post('/invoice-delete', [InvoiceController::class, 'invoiceDelete'])->nam
 Route::get('/invoice-list', [InvoiceController::class, 'invoiceList'])->name('invoiceList')->middleware('auth:sanctum');
 Route::get('/customers', [InvoiceController::class, 'customer_list'])->name('customerlist')->middleware('auth:sanctum');
 Route::get('/products', [ProductController::class, 'product_list'])->name('productlist')->middleware('auth:sanctum');
-route::get('/edit-invoice', [InvoiceController::class, 'editInvoice'])->name('editInvoice')->middleware('auth:sanctum');
+route::get('/sale-create', [InvoiceController::class, 'editInvoice'])->name('editInvoice')->middleware('auth:sanctum');
 
 
 // Report

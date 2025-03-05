@@ -11,7 +11,7 @@
             <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600">Search</button>
         </form>
 
-        <a href="{{ url('/edit-invoice') }}" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600">CREATE</a>
+        <a href="{{ route('editInvoice') }}" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600">CREATE</a>
     </div>
 
     <!-- Success and Error Alerts -->
@@ -74,41 +74,7 @@
     @endif
 </div>
 
-<!-- Modal -->
-<div id="invoiceModal" class="modal fade" tabindex="-1" aria-labelledby="invoiceModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="invoiceModalLabel">Invoice Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Customer Info -->
-                <p><strong>Customer Name:</strong> <span id="customerName"></span></p>
-                <p><strong>Customer Email:</strong> <span id="customerEmail"></span></p>
-                <p><strong>Customer ID:</strong> <span id="customerId"></span></p>
-
-                <!-- Invoice Info -->
-                <p><strong>Invoice Total:</strong> $<span id="invoiceTotal"></span></p>
-                <p><strong>VAT:</strong> $<span id="invoiceVat"></span></p>
-                <p><strong>Discount:</strong> $<span id="invoiceDiscount"></span></p>
-                <p><strong>Payable:</strong> $<span id="invoicePayable"></span></p>
-
-                <!-- Products List -->
-                <h4 class="mt-4 font-medium">Products:</h4>
-                <ul id="productsList">
-                    <!-- Dynamic product items will be inserted here -->
-                </ul>
-            </div>
-            <div class="modal-footer">
-                <!-- Print Button -->
-                <button onclick="printInvoice()" class="btn btn-outline-primary">Print</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
+@include('componands.sale-reportTem')
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
     // Confirm Delete
@@ -143,75 +109,81 @@
     }
 
     function viewInvoiceDetails(cusId, invId) {
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');  // Fetch the CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content'); // Fetch CSRF token
 
-        // Make an AJAX request
-        axios.post('{{ route('invoiceDetails') }}', {
-            cus_id: cusId,
-            inv_id: invId,
-            _token: csrfToken
-        })
-        .then(function (response) {
-            if (response.data.status === 'success') {
-                // Show the invoice details in the modal
-                const data = response.data.rows;
-                const customer = data.customer;
-                const invoice = data.invoice;
-                const products = data.product;
+    axios.post('{{ route('invoiceDetails') }}', {
+        cus_id: cusId,
+        inv_id: invId,
+        _token: csrfToken
+    })
+    .then(function (response) {
+        if (response.data.status === 'success') {
+            const data = response.data.rows;
+            const customer = data.customer;
+            const invoice = data.invoice;
+            const products = data.product;
 
-                document.getElementById('customerName').innerText = customer.name;
-                document.getElementById('customerEmail').innerText = customer.email;
-                document.getElementById('customerId').innerText = customer.id;
-                document.getElementById('invoiceTotal').innerText = invoice.total;
-                document.getElementById('invoiceVat').innerText = invoice.vat;
-                document.getElementById('invoiceDiscount').innerText = invoice.discount;
-                document.getElementById('invoicePayable').innerText = invoice.payable;
+            document.getElementById('customerName').innerText = customer.name;
+            document.getElementById('customerEmail').innerText = customer.email;
+            document.getElementById('customerId').innerText = customer.id;
+            document.getElementById('invoiceTotal').innerText = invoice.total;
+            document.getElementById('invoiceVat').innerText = invoice.vat;
+            document.getElementById('invoiceDiscount').innerText = invoice.discount;
+            document.getElementById('invoicePayable').innerText = invoice.payable;
 
-                // Add products to the modal
-                const productsList = document.getElementById('productsList');
-                productsList.innerHTML = ''; // Clear existing products
-                products.forEach(product => {
-                    const li = document.createElement('li');
-                    li.textContent = `${product.product.name} - Quantity: ${product.qty}`;
-                    productsList.appendChild(li);
-                });
+            // Add products to the modal
+            const productsList = document.getElementById('productsList');
+            productsList.innerHTML = ''; // Clear existing products
+            products.forEach(product => {
+                const row = `<tr>
+                                <td class="border p-2">${product.product.name}</td>
+                                <td class="border p-2">${product.qty}</td>
+                                <td class="border p-2">$${product.product.price}</td>
+                            </tr>`;
+                productsList.innerHTML += row;
+            });
 
-                // Display the modal
-                var myModal = new bootstrap.Modal(document.getElementById('invoiceModal'), {});
-                myModal.show();
-            } else {
-                // Show error message if the request fails
-                alert('Error: ' + response.data.message);
-            }
-        })
-        .catch(function (error) {
-            console.error('There was an error making the request:', error);
-            alert('An error occurred while fetching invoice details.');
-        });
-    }
+            // Show modal
+            document.getElementById('invoiceModal').classList.remove('hidden');
+        } else {
+            alert('Error: ' + response.data.message);
+        }
+    })
+    .catch(function (error) {
+        console.error('There was an error making the request:', error);
+        alert('An error occurred while fetching invoice details.');
+    });
+}
 
-    // Print Invoice
-    function printInvoice() {
-        const content = document.querySelector('.modal-body').innerHTML;
-        const printWindow = window.open('', '', 'width=800,height=600');
-        printWindow.document.write(`
-            <html>
-                <head>
-                    <title>Invoice</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 20px; }
-                        .modal-body { margin-bottom: 20px; }
-                        h4 { margin-top: 20px; }
-                    </style>
-                </head>
-                <body>
-                    <div>${content}</div>
-                </body>
-            </html>
-        `);
-        printWindow.document.close();
-        printWindow.print();
-    }
+function closeModal() {
+    document.getElementById('invoiceModal').classList.add('hidden');
+}
+
+function printInvoice() {
+    const modalContent = document.querySelector('#invoiceModal .p-6').innerHTML; // Select the modal content
+
+    const printWindow = window.open('', '', 'width=800,height=600');
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>Invoice</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; }
+                    table { width: 100%; border-collapse: collapse; }
+                    th, td { border: 1px solid black; padding: 8px; text-align: left; }
+                    h5 { margin-bottom: 10px; }
+                </style>
+            </head>
+            <body>
+                <h5>Invoice Details</h5>
+                ${modalContent}
+            </body>
+        </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+}
+
 </script>
 
 @endsection

@@ -65,9 +65,9 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('categoryList') }}">Category</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('productList') }}">Product</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('customerList') }}">Customer</a></li>
-                       <li class="nav-item"><a class="nav-link" href="{{ url('/edit-invoice') }}">Create Sale</a></li>
+                       <li class="nav-item"><a class="nav-link" href="{{ route('editInvoice') }}">Create Sale</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('invoiceList') }}">Invoice</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url('/report') }}">Report</a></li>
+                        <!-- <li class="nav-item"><a class="nav-link" href="{{ url('/report') }}">Report</a></li> -->
                     </ul>
                 </div>
             </nav>
