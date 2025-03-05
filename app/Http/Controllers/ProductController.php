@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Product;
 use Exception;
 use Illuminate\Support\Facades\File;
-use App\Models\Category;
 
 
 class ProductController extends Controller
