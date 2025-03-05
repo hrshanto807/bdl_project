@@ -67,7 +67,7 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('customerList') }}">Customer</a></li>
                        <li class="nav-item"><a class="nav-link" href="{{ route('editInvoice') }}">Create Sale</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('invoiceList') }}">Invoice</a></li>
-                        <!-- <li class="nav-item"><a class="nav-link" href="{{ url('/report') }}">Report</a></li> -->
+                        <li class="nav-item"><a class="nav-link" href="{{ url('/report') }}">Report</a></li>
                     </ul>
                 </div>
             </nav>

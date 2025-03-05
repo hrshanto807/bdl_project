@@ -1,5 +1,5 @@
 <!-- Modal -->
-<div id="invoiceModal" class="fixed inset-0 flex items-center justify-center  hidden">
+<div id="invoiceModal" class="fixed inset-0 flex items-center justify-center hidden">
         <div class="bg-white rounded-lg shadow-lg w-3/4">
             <div class="p-4 border-b flex justify-between items-center">
                 <h5 class="text-lg font-semibold">Invoice Details</h5>
