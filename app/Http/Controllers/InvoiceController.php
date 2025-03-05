@@ -174,7 +174,7 @@ class InvoiceController extends Controller
     }
 }
 
-public function showInvoice($cus_id, $inv_id)
+public function      showInvoice($cus_id, $inv_id)
 {
     return view('invoice.invoice-details', compact('cus_id', 'inv_id'));
 }

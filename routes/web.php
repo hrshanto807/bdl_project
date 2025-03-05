@@ -93,19 +93,9 @@ Route::get('/customers', [InvoiceController::class, 'customer_list'])->name('cus
 Route::get('/products', [ProductController::class, 'product_list'])->name('productlist')->middleware('auth:sanctum');
 route::get('/edit-invoice', [InvoiceController::class, 'editInvoice'])->name('editInvoice')->middleware('auth:sanctum');
 
-// Route::get('/invoice', [InvoiceController::class, 'showInvoice'])->name('')->middleware('');
+
 // Report
 Route::get("/sales-report/{FormDate}/{ToDate}",[ReportController::class,'SalesReport'])->middleware('auth:sanctum');
-
-
-
-
-
-
-
-
-
-
-
-
-
+Route::get('/report', function(){
+    return view('page.report');
+})->middleware('auth:sanctum');
