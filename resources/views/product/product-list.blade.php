@@ -7,7 +7,7 @@
 
         <!-- Search Form -->
         <form method="GET" action="{{ route('productList') }}" class="flex space-x-4 items-center">
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name..." class="p-2 border rounded">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search Product" class="p-2 border rounded">
             <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Search</button>
         </form>
 

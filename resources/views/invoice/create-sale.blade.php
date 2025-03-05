@@ -35,7 +35,7 @@
 
                 <p><strong>Discount:</strong> $<span id="discount">0.00</span></p>
                 <div class="mb-3">
-                    <label for="discountInput" class="form-label">Discount (%):</label>
+                    <label for="discountInput" class="form-label">Discount ($):</label>
                     <input type="number" id="discountInput" class="form-control" value="0">
                 </div>
                 <button class="btn btn-primary w-100" id="confirmInvoice">CONFIRM</button>

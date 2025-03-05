@@ -85,9 +85,9 @@ class ProductController extends Controller
             // Delete the product from the database
             $product->delete();
 
-            return redirect()->route('productList')->with('status', 'Product and image deleted successfully.');
+            return redirect()->route('productList')->with('status', 'Product deleted successfully.');
         } catch (Exception $e) {
-            return redirect()->route('productList')->with('status', 'Failed to delete category');
+            return redirect()->route('productList')->with('status', 'Failed to delete Product');
         }
     }
 
@@ -156,14 +156,22 @@ class ProductController extends Controller
 
     public function ProductList(Request $request)
     {
-        $user_id = Auth::id(); // If you need to use user_id for filtering, you can include it
+        $user_id = Auth::id();
 
         // Start the query
         $query = Product::query();
-
         // Apply search filter if query is provided
         if ($request->has('search') && $request->search != '') {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $searchTerm = $request->search;
+
+            $query->where(function ($query) use ($searchTerm) {
+                $query->where('name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('price', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('unit', 'like', '%' . $searchTerm . '%')
+                    ->orWhereHas('category', function ($query) use ($searchTerm) {
+                        $query->where('name', 'like', '%' . $searchTerm . '%');
+                    });
+            });
         }
 
         // Fetch the filtered and paginated products
@@ -188,8 +196,8 @@ class ProductController extends Controller
     }
 
     public function product_list()
-{
-    $products = Product::all();  // Fetch all products from the database
-    return response()->json($products);
-}
+    {
+        $products = Product::all();  // Fetch all products from the database
+        return response()->json($products);
+    }
 }

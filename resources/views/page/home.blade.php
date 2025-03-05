@@ -23,7 +23,7 @@
         </a>
     </div>
     <div class="col-md-3">
-        <a href="#" class="card p-3 text-center hover-effect">
+        <a href="{{ route('invoiceList') }}" class="card p-3 text-center hover-effect">
             <i class="fas fa-file-invoice fa-2x mb-2 text-danger"></i>
             <div>{{ \App\Models\Invoice::count() }} Invoices</div> <!-- Dynamic invoice count -->
         </a>

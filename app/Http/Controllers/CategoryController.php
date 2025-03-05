@@ -29,16 +29,28 @@ class CategoryController extends Controller
     }
 }
 
-
 public function CategoryList(Request $request)
 {
     $user_id = Auth::id();
-    $categories = Category::where('user_id', '=', $user_id)
-                          ->orderBy('created_at', 'desc')
-                          ->paginate(5);  // Use paginate to get paginated results
+    
+    // Get the search value from the request
+    $search = $request->input('search');
 
+    // Build the query to include the search logic
+    $query = Category::where('user_id', '=', $user_id);
+
+    // If a search term is provided, filter by category name
+    if ($search) {
+        $query->where('name', 'like', '%' . $search . '%');
+    }
+
+    // Get the categories with pagination
+    $categories = $query->orderBy('created_at', 'desc')->paginate(5);
+
+    // Return the view with categories
     return view('categories.category-list', compact('categories'));
 }
+
 
 public function DeleteCategory(Request $request)
 {
