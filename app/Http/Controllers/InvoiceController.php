@@ -146,11 +146,16 @@ class InvoiceController extends Controller
     
 
 
-    public function customer_list()
-    {
-        $customers = Customer::all(); // Assuming you have a Customer model and table
-        return response()->json($customers);
-    }
+    public function customer_list(Request $request)
+{
+    $search = $request->query('search'); // Get search query
+
+    $customers = Customer::when($search, function($query, $search) {
+        return $query->where('name', 'like', "%{$search}%");
+    })->get(); // Return all matching customers
+
+    return response()->json($customers);
+}
 
     public function invoiceList(Request $request)
 {

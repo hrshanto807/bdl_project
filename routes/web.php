@@ -96,6 +96,4 @@ route::get('/sale-create', [InvoiceController::class, 'editInvoice'])->name('edi
 
 // Report
 Route::get("/sales-report/{FormDate}/{ToDate}",[ReportController::class,'SalesReport'])->middleware('auth:sanctum');
-Route::get('/report', function(){
-    return view('page.report');
-})->middleware('auth:sanctum');
+Route::get('/report', [ReportController::class,'ReportPage'])->middleware('auth:sanctum');

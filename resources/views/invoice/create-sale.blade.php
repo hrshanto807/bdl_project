@@ -50,6 +50,11 @@
                 <table class="table">
                     <tbody id="productList"></tbody>
                 </table>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination" id="productPagination">
+                        <!-- Pagination will be injected here -->
+                    </ul>
+                </nav>
             </div>
         </div>
 
@@ -69,66 +74,105 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         fetchCustomers();
-        fetchProducts();
+        fetchProducts(1);
 
-        // Fetch customers
-        function fetchCustomers() {
-            axios.get("{{ url('/customers') }}")
+        // Fetch customers with search
+        function fetchCustomers(searchQuery = "") {
+            axios.get("{{ url('/customers') }}", {
+                    params: {
+                        search: searchQuery // Send search query if any
+                    }
+                })
                 .then(response => {
                     let customers = response.data;
                     let customerList = document.getElementById("customerList");
                     customerList.innerHTML = "";
                     customers.forEach(customer => {
                         let row = `
-                            <tr>
-                                <td>${customer.name}</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary selectCustomer"
-                                        data-id="${customer.id}"
-                                        data-name="${customer.name}"
-                                        data-email="${customer.email}">
-                                        Select
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
+                <tr>
+                    <td>${customer.name}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary selectCustomer"
+                            data-id="${customer.id}"
+                            data-name="${customer.name}"
+                            data-email="${customer.email}">
+                            Select
+                        </button>
+                    </td>
+                </tr>
+            `;
                         customerList.innerHTML += row;
                     });
                 })
                 .catch(error => console.error("Error fetching customers:", error));
         }
 
-        // Fetch products
-        function fetchProducts() {
-            axios.get("{{ url('/products') }}")
+        // Search event listener for customers
+        document.getElementById("searchCustomer").addEventListener("input", function() {
+            fetchCustomers(this.value); // Fetch customers on search input
+        });
+
+
+        // Fetch products with search and pagination
+        function fetchProducts(page, searchQuery = "") {
+            axios.get("{{ url('/products') }}", {
+                    params: {
+                        page: page,
+                        search: searchQuery // Send search query if any
+                    }
+                })
                 .then(response => {
-                    let products = response.data;
+                    let products = response.data.data;
                     let productList = document.getElementById("productList");
+                    let pagination = document.getElementById("productPagination");
+
                     productList.innerHTML = "";
                     products.forEach(product => {
                         let row = `
-                            <tr>
-                                <td>
-                                    <img src="${product.img_url}" alt="${product.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
-                                </td>
-                                <td>
-                                    ${product.name} ($${product.price})
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-success addProduct"
-                                        data-id="${product.id}"
-                                        data-name="${product.name}"
-                                        data-price="${product.price}">
-                                        Add
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
+                <tr>
+                    <td>
+                        <img src="${product.img_url}" alt="${product.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                    </td>
+                    <td>
+                        ${product.name} ($${product.price})
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-success addProduct"
+                            data-id="${product.id}"
+                            data-name="${product.name}"
+                            data-price="${product.price}">
+                            Add
+                        </button>
+                    </td>
+                </tr>
+            `;
                         productList.innerHTML += row;
+                    });
+
+                    // Generate pagination buttons
+                    pagination.innerHTML = "";
+                    for (let i = 1; i <= response.data.last_page; i++) {
+                        let pageButton = document.createElement("li");
+                        pageButton.classList.add("page-item");
+                        pageButton.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+                        pagination.appendChild(pageButton);
+                    }
+
+                    // Add event listeners for pagination
+                    document.querySelectorAll("#productPagination .page-link").forEach(button => {
+                        button.addEventListener("click", function(event) {
+                            event.preventDefault();
+                            fetchProducts(button.dataset.page, document.getElementById("searchProduct").value);
+                        });
                     });
                 })
                 .catch(error => console.error("Error fetching products:", error));
         }
+
+        // Search event listener for products
+        document.getElementById("searchProduct").addEventListener("input", function() {
+            fetchProducts(1, this.value); // Fetch products on search input
+        });
 
         // Select Customer
         document.addEventListener("click", function(event) {
@@ -264,5 +308,4 @@
         });
     });
 </script>
-
 @endsection

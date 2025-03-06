@@ -194,9 +194,30 @@ class ProductController extends Controller
         return view('product.product-add');
     }
 
-    public function product_list()
-    {
-        $products = Product::all();  // Fetch all products from the database
-        return response()->json($products);
+    public function product_list(Request $request)
+{
+    // Start the query
+    $query = Product::query();
+    
+    // Apply search filter if query is provided
+    if ($request->has('search') && $request->search != '') {
+        $searchTerm = $request->search;
+
+        $query->where(function ($query) use ($searchTerm) {
+            $query->where('name', 'like', '%' . $searchTerm . '%')
+                ->orWhere('price', 'like', '%' . $searchTerm . '%');
+               
+               
+        });
     }
+
+    // Fetch products, applying pagination of 5 products per page
+    $products = $query->paginate(5); 
+
+    // Return the paginated products as a JSON response
+    return response()->json($products);
+}
+
+
+    
 }

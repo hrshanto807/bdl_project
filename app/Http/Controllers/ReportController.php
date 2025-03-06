@@ -47,4 +47,8 @@ class ReportController extends Controller
 
     }
 
+    public function ReportPage(Request $request){
+        return view('page.report');
+    }
+
 }
