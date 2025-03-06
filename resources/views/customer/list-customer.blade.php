@@ -35,7 +35,6 @@
                         <th>Name</th>
                         <th>Email</th>
                         <th>Phone</th>
-                        <th>Address</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -46,9 +45,9 @@
                         <td>{{ $customer->name }}</td>
                         <td>{{ $customer->email }}</td>
                         <td>{{ $customer->mobile }}</td>
-                        <td>{{ $customer->address }}</td>
+
                         <td>
-                            <button onclick="openEditModal('{{ $customer->id }}', '{{ $customer->name }}', '{{ $customer->email }}', '{{ $customer->mobile }}', '{{ $customer->address }}')" class="btn btn-outline-success btn-sm rounded-pill px-3">EDIT</button>
+                            <button onclick="openEditModal('{{ $customer->id }}', '{{ $customer->name }}', '{{ $customer->email }}', '{{ $customer->mobile }}', )" class="btn btn-outline-success btn-sm rounded-pill px-3">EDIT</button>
 
                             <!-- Delete Button -->
                             <button onclick="confirmDelete(event,'{{ route('deleteCustomer') }}', '{{ $customer->id }}')"

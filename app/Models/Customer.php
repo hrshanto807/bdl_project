@@ -10,6 +10,7 @@ class Customer extends Model
         'name',
         'email',
         'mobile',
-        'user_id'
+        'user_id',
+        
     ];
 }

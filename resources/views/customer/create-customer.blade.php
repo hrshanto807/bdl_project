@@ -46,12 +46,7 @@
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
-
-            <div class="mb-3">
-                <label for="customerAddress" class="form-label">Customer Address *</label>
-                <input type="text" class="form-control @error('address') is-invalid @enderror" name="address" id="customerAddress" value="{{ old('address') }}" required>
-
-            </div>
+            
 
             <div class="mb-3">
                 <button type="submit" class="btn btn-success">Create Customer</button>
